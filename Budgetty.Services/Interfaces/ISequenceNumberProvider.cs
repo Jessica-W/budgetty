@@ -2,5 +2,6 @@
 
 public interface ISequenceNumberProvider
 {
-    int GetNextSequenceNumber();
+    int GetNextSequenceNumber(string userId);
+    Task InitialiseSequenceNumberAsync(string userId);
 }

@@ -7,9 +7,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Budgetty", "Budgetty\Budget
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Budgetty.Domain", "Budgetty.Domain\Budgetty.Domain.csproj", "{5B22B9BC-A76F-4233-8416-39D872187B4F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Budgetty.Persistance", "Budgetty.Persistance\Budgetty.Persistance.csproj", "{D26E7AD9-2199-4C32-B602-4C0ADFBA784B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Budgetty.Persistance", "Budgetty.Persistance\Budgetty.Persistance.csproj", "{D26E7AD9-2199-4C32-B602-4C0ADFBA784B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Budgetty.Services", "Budgetty.Services\Budgetty.Services.csproj", "{FE5EEA3B-0CFD-4ADA-88E2-34E206C9E410}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Budgetty.Services", "Budgetty.Services\Budgetty.Services.csproj", "{FE5EEA3B-0CFD-4ADA-88E2-34E206C9E410}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Budgetty.Mvc", "Budgetty.Mvc\Budgetty.Mvc.csproj", "{ABD67FC7-1285-46BA-B057-BD0D5D1FF5F2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{FE5EEA3B-0CFD-4ADA-88E2-34E206C9E410}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FE5EEA3B-0CFD-4ADA-88E2-34E206C9E410}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FE5EEA3B-0CFD-4ADA-88E2-34E206C9E410}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ABD67FC7-1285-46BA-B057-BD0D5D1FF5F2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ABD67FC7-1285-46BA-B057-BD0D5D1FF5F2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ABD67FC7-1285-46BA-B057-BD0D5D1FF5F2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ABD67FC7-1285-46BA-B057-BD0D5D1FF5F2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

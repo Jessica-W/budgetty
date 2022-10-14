@@ -5,7 +5,8 @@
         public int Id { get; set; }
         public DateOnly Date { get; set; }
         public int SequenceNumber { get; set; }
-        
+        public string? UserId { get; set; }
+
         protected abstract string DebugString();
 
         public override string ToString()

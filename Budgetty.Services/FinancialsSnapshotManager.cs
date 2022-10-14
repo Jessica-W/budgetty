@@ -16,8 +16,7 @@ namespace Budgetty.Services
             _snapshotLockManager = snapshotLockManager;
         }
 
-        public async Task CreateSnapshotAsync(FinancialState state,
-            DateOnly date)
+        public async Task CreateSnapshotAsync(string userId, FinancialState state, DateOnly date)
         {
             var snapshotId = Guid.NewGuid();
 
@@ -38,7 +37,7 @@ namespace Budgetty.Services
                 }).ToList(),
             };
 
-            var gotLock = await _snapshotLockManager.TryGetLockAsync();
+            var gotLock = await _snapshotLockManager.TryGetLockAsync(userId);
 
             if (gotLock)
             {
@@ -49,14 +48,15 @@ namespace Budgetty.Services
                 }
                 finally
                 {
-                    await _snapshotLockManager.ReleaseLockAsync();
+                    await _snapshotLockManager.ReleaseLockAsync(userId);
                 }
             }
         }
 
-        public async Task<FinancialsSnapshot?> GetSnapshotAsync()
+        public async Task<FinancialsSnapshot?> GetSnapshotAsync(string userId)
         {
             var financialsSnapshots = await _budgettyDbContext.FinancialsSnapshots
+                .Where(x => x.UserId == userId)
                 .OrderByDescending(x => x.Date)
                 .ToListAsync();
 

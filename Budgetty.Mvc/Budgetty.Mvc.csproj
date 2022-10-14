@@ -1,0 +1,32 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>aspnet-Budgetty.Mvc-80175D2B-F21B-4DA2-9EFA-E0A307882EBD</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Autofac" Version="6.4.0" />
+    <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="8.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="6.0.9" />
+    <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="6.0.8" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="6.0.8" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="6.0.8" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.8" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="6.0.8" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="6.0.9" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Budgetty.Domain\Budgetty.Domain.csproj" />
+    <ProjectReference Include="..\Budgetty.Persistance\Budgetty.Persistance.csproj" />
+    <ProjectReference Include="..\Budgetty.Services\Budgetty.Services.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Identity\" />
+  </ItemGroup>
+
+</Project>

@@ -4,5 +4,6 @@
     {
         public int Id { get; set; }
         public int SequenceNo { get; set; }
+        public string? UserId { get; set; }
     }
 }

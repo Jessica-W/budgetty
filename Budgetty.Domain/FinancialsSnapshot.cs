@@ -10,6 +10,7 @@ namespace Budgetty.Domain
         public List<PoolSnapshot> PoolSnapshots { get; set; } = new();
         public List<BankAccountSnapShot> BankAccountSnapShots { get; set; } = new();
         public List<BudgetaryEvent> BudgetaryEvents { get; set; } = new();
+        public string? UserId { get; set; }
     }
 
     public class BankAccountSnapShot

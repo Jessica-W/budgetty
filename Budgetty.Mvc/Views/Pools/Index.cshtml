@@ -1,0 +1,10 @@
+﻿@model Budgetty.Mvc.Models.Pools.PoolsViewModel
+
+<h3>Pools</h3>
+
+<ul>
+    @foreach (var pool in Model.Pools)
+    {
+        <li>@pool</li>
+    }
+</ul>

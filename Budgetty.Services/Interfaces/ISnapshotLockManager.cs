@@ -2,6 +2,7 @@
 
 public interface ISnapshotLockManager
 {
-    Task<bool> TryGetLockAsync();
-    Task ReleaseLockAsync();
+    Task InitialiseLock(string userId);
+    Task<bool> TryGetLockAsync(string userId);
+    Task ReleaseLockAsync(string userId);
 }

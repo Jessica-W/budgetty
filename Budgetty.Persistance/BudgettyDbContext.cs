@@ -1,10 +1,11 @@
 ﻿using Budgetty.Domain;
 using Budgetty.Domain.BudgetaryEvents;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace Budgetty.Persistance
 {
-    public class BudgettyDbContext : DbContext
+    public class BudgettyDbContext : IdentityDbContext
     {
         public DbSet<BudgetaryEvent> BudgetaryEvents { get; set; } = null!;
         public DbSet<BudgetaryPool> BudgetaryPools { get; set; } = null!;
@@ -13,15 +14,14 @@ namespace Budgetty.Persistance
         public DbSet<SequenceNumber> SequenceNumbers { get; set; } = null!;
         public DbSet<SnapshotLock> SnapshotLocks { get; set; } = null!;
 
-        private const string ConnectionString = "server=10.10.3.159;port=3307;database=Budgetty;user=budgetty;password=6SmilingSausagesAteTheBeans!";
-
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        public BudgettyDbContext(DbContextOptions<BudgettyDbContext> dbContextOptions) : base(dbContextOptions)
         {
-            optionsBuilder.UseMySql(ConnectionString, ServerVersion.AutoDetect(ConnectionString));
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            base.OnModelCreating(modelBuilder);
+
             modelBuilder.Entity<BudgetaryEvent>()
                 .HasDiscriminator<string>("EventType")
                 .HasValue<ExpenditureEvent>("expenditure_event")

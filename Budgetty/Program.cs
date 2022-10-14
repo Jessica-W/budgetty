@@ -1,24 +1,18 @@
-﻿using Autofac;
-using Budgetty.Autofac;
-using Budgetty.Persistance.Autofac;
-using Budgetty.Services.Autofac;
-
-namespace Budgetty
+﻿namespace Budgetty
 {
     internal class Program
     {
         static async Task Main(string[] args)
         {
-            var containerBuilder = new ContainerBuilder();
-            containerBuilder.RegisterModule<BudgettyModule>();
-            containerBuilder.RegisterModule<ServicesModule>();
-            containerBuilder.RegisterModule<PersistenceModule>();
+            var name = "test";
+            Test($"This is a {name}");
 
-            var container = containerBuilder.Build();
+            await Task.Delay(1);
+        }
 
-            var testing = container.Resolve<Testing>();
-
-            await testing.Test();
+        private static void Test(FormattableString fmtString)
+        {
+            var fmt = fmtString.Format;
         }
     }
 }

@@ -4,6 +4,6 @@ namespace Budgetty.Services.Interfaces;
 
 public interface IFinancialsSnapshotManager
 {
-    Task CreateSnapshotAsync(FinancialState state, DateOnly date);
-    Task<FinancialsSnapshot?> GetSnapshotAsync();
+    Task CreateSnapshotAsync(string userId, FinancialState state, DateOnly date);
+    Task<FinancialsSnapshot?> GetSnapshotAsync(string userId);
 }

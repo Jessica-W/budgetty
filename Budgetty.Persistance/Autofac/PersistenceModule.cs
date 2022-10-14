@@ -6,7 +6,6 @@ namespace Budgetty.Persistance.Autofac
     {
         protected override void Load(ContainerBuilder builder)
         {
-            builder.RegisterType<BudgettyDbContext>().AsSelf().InstancePerLifetimeScope();
         }
     }
 }
