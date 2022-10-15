@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Budgetty.Persistance.Migrations
 {
     [DbContext(typeof(BudgettyDbContext))]
-    [Migration("20220904040121_Initial")]
+    [Migration("20221015165619_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -83,7 +83,7 @@ namespace Budgetty.Persistance.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("UserId")
-                        .HasColumnType("longtext");
+                        .HasColumnType("varchar(255)");
 
                     b.HasKey("Id");
 
@@ -412,7 +412,7 @@ namespace Budgetty.Persistance.Migrations
 
                     b.HasIndex("PoolId");
 
-                    b.HasIndex("SequenceNumber")
+                    b.HasIndex("UserId", "SequenceNumber")
                         .IsUnique();
 
                     b.HasDiscriminator().HasValue("expenditure_event");

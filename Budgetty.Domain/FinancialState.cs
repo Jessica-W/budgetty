@@ -13,7 +13,7 @@
                 _poolBalances.Add(budgetaryPool, 0);
             }
 
-            foreach (var bankAccount in bankAccounts)
+            foreach (var bankAccount in bankAccounts.Distinct())
             {
                 _bankAccountBalances.Add(bankAccount, 0);
             }

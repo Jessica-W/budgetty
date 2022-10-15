@@ -1,11 +1,10 @@
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
+using Budgetty.Mvc.DependencyInjection;
 using Budgetty.Mvc.Identity;
-using Budgetty.Persistance;
-using Budgetty.Persistance.Autofac;
-using Budgetty.Services.Autofac;
+using Budgetty.Persistance.DependencyInjection;
+using Budgetty.Services.DependencyInjection;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 
 namespace Budgetty.Mvc
 {
@@ -19,12 +18,13 @@ namespace Budgetty.Mvc
 
             // Add services to the container.
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
-            builder.Services.AddDbContext<BudgettyDbContext>(options =>
-                options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
+
+            ServiceCollectionRegistrations.RegisterDbContext(builder.Services, connectionString);
+            
             builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-            builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
-                .AddEntityFrameworkStores<BudgettyDbContext>()
+            builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = false)
+                .AddBudgettyDbStores()
                 .AddUserManager<ApplicationUserManager>();
 
             builder.Services.AddControllersWithViews();
@@ -40,6 +40,7 @@ namespace Budgetty.Mvc
             {
                 builder.RegisterModule<ServicesModule>();
                 builder.RegisterModule<PersistenceModule>();
+                builder.RegisterModule<MappersModule>();
             });
 
             var app = builder.Build();
@@ -66,7 +67,7 @@ namespace Budgetty.Mvc
 
             app.MapControllerRoute(
                 name: "default",
-                pattern: "{controller=Home}/{action=Index}/{id?}");
+                pattern: "{controller=Summary}/{action=Index}/{id?}");
             app.MapRazorPages();
 
             app.Run();

@@ -1,4 +1,4 @@
-﻿namespace Budgetty.Services.Interfaces;
+﻿namespace Budgetty.Persistance;
 
 public interface ISnapshotLockManager
 {

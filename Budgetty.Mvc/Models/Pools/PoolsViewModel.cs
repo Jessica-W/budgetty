@@ -2,6 +2,6 @@
 {
     public class PoolsViewModel
     {
-        public List<string> Pools { get; set; }
+        public List<string> Pools { get; set; } = new();
     }
 }

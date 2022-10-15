@@ -318,7 +318,7 @@ namespace Budgetty.Persistance.Migrations
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     Date = table.Column<DateOnly>(type: "date", nullable: false),
                     SequenceNumber = table.Column<int>(type: "int", nullable: false),
-                    UserId = table.Column<string>(type: "longtext", nullable: true)
+                    UserId = table.Column<string>(type: "varchar(255)", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     EventType = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
@@ -472,15 +472,15 @@ namespace Budgetty.Persistance.Migrations
                 column: "PoolId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_BudgetaryEvents_SequenceNumber",
-                table: "BudgetaryEvents",
-                column: "SequenceNumber",
-                unique: true);
-
-            migrationBuilder.CreateIndex(
                 name: "IX_BudgetaryEvents_SourcePoolId",
                 table: "BudgetaryEvents",
                 column: "SourcePoolId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_BudgetaryEvents_UserId_SequenceNumber",
+                table: "BudgetaryEvents",
+                columns: new[] { "UserId", "SequenceNumber" },
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_BudgetaryPools_BankAccountId",

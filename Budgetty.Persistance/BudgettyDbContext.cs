@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Budgetty.Persistance
 {
-    public class BudgettyDbContext : IdentityDbContext
+    internal class BudgettyDbContext : IdentityDbContext
     {
         public DbSet<BudgetaryEvent> BudgetaryEvents { get; set; } = null!;
         public DbSet<BudgetaryPool> BudgetaryPools { get; set; } = null!;
@@ -42,7 +42,7 @@ namespace Budgetty.Persistance
                 .HasBaseType<BudgetaryEvent>();
 
             modelBuilder.Entity<ExpenditureEvent>()
-                .HasIndex(x => x.SequenceNumber)
+                .HasIndex(x => new { x.UserId, x.SequenceNumber })
                 .IsUnique();
 
             modelBuilder.Entity<ExpenditureEvent>()

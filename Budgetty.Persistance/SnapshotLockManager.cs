@@ -1,11 +1,9 @@
 ﻿using Budgetty.Domain;
-using Budgetty.Persistance;
-using Budgetty.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
-namespace Budgetty.Services
+namespace Budgetty.Persistance
 {
-    public class SnapshotLockManager : ISnapshotLockManager
+    internal class SnapshotLockManager : ISnapshotLockManager
     {
         private readonly BudgettyDbContext _budgettyDbContext;
         private const int MaxAttempts = 10;

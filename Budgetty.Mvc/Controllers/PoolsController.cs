@@ -1,19 +1,21 @@
 ﻿using Budgetty.Mvc.Models.Pools;
-using Budgetty.Persistance;
+using Budgetty.Persistance.Repositories;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Budgetty.Mvc.Controllers
 {
+    [Authorize]
     public class PoolsController : Controller
     {
-        private readonly BudgettyDbContext _budgettyDbContext;
         private readonly UserManager<IdentityUser> _userManager;
+        private readonly IBudgetaryRepository _budgetaryRepository;
 
-        public PoolsController(BudgettyDbContext budgettyDbContext, UserManager<IdentityUser> userManager)
+        public PoolsController(UserManager<IdentityUser> userManager, IBudgetaryRepository budgetaryRepository)
         {
-            _budgettyDbContext = budgettyDbContext;
             _userManager = userManager;
+            _budgetaryRepository = budgetaryRepository;
         }
 
         public IActionResult Index()
@@ -22,7 +24,10 @@ namespace Budgetty.Mvc.Controllers
 
             var model = new PoolsViewModel
             {
-                Pools = _budgettyDbContext.BudgetaryPools.Where(x => x.UserId == userId).Select(x => x.Name).ToList(),
+                Pools = _budgetaryRepository
+                    .GetBudgetaryPoolsForUser(userId, includeBankAccounts: false)
+                    .Select(x => x.Name)
+                    .ToList(),
             };
 
             return View(model);

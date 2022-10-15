@@ -1,7 +1,7 @@
 ﻿using Autofac;
 using Budgetty.Services.Interfaces;
 
-namespace Budgetty.Services.Autofac
+namespace Budgetty.Services.DependencyInjection
 {
     public class ServicesModule : Module
     {
@@ -9,8 +9,7 @@ namespace Budgetty.Services.Autofac
         {
             builder.RegisterType<EventProcessor>().As<IEventProcessor>().SingleInstance();
             builder.RegisterType<FinancialsSnapshotManager>().As<IFinancialsSnapshotManager>();
-            builder.RegisterType<SequenceNumberProvider>().As<ISequenceNumberProvider>();
-            builder.RegisterType<SnapshotLockManager>().As<ISnapshotLockManager>();
+            builder.RegisterType<FinancialStateService>().As<IFinancialStateService>();
         }
     }
 }

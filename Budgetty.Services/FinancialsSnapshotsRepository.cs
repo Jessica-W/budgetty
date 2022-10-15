@@ -1,18 +1,15 @@
 ﻿using Budgetty.Domain;
 using Budgetty.Persistance;
 using Budgetty.Services.Interfaces;
-using Microsoft.EntityFrameworkCore;
 
 namespace Budgetty.Services
 {
     public class FinancialsSnapshotManager : IFinancialsSnapshotManager
     {
-        private readonly BudgettyDbContext _budgettyDbContext;
         private readonly ISnapshotLockManager _snapshotLockManager;
 
-        public FinancialsSnapshotManager(BudgettyDbContext budgettyDbContext, ISnapshotLockManager snapshotLockManager)
+        public FinancialsSnapshotManager(ISnapshotLockManager snapshotLockManager)
         {
-            _budgettyDbContext = budgettyDbContext;
             _snapshotLockManager = snapshotLockManager;
         }
 
@@ -43,8 +40,7 @@ namespace Budgetty.Services
             {
                 try
                 {
-                    _budgettyDbContext.FinancialsSnapshots.Add(snapshot);
-                    await _budgettyDbContext.SaveChangesAsync();
+                    // TODO: Use repository to save snapshot
                 }
                 finally
                 {
@@ -55,7 +51,8 @@ namespace Budgetty.Services
 
         public async Task<FinancialsSnapshot?> GetSnapshotAsync(string userId)
         {
-            var financialsSnapshots = await _budgettyDbContext.FinancialsSnapshots
+            /*
+            var financialsSnapshots = await budgettyDbContext.FinancialsSnapshots
                 .Where(x => x.UserId == userId)
                 .OrderByDescending(x => x.Date)
                 .ToListAsync();
@@ -67,13 +64,18 @@ namespace Budgetty.Services
                 return null;
             }
 
-            return await _budgettyDbContext.FinancialsSnapshots
+            return await budgettyDbContext.FinancialsSnapshots
                 .Where(x => x.Id == financialsSnapshot.Id)
                 .Include(x => x.BankAccountSnapShots)
                 .ThenInclude(x => x.BankAccount)
                 .Include(x => x.PoolSnapshots)
                 .ThenInclude(x => x.Pool)
-                .SingleAsync();
+                .SingleAsync();*/
+
+            //TODO: use repository to get snapshots
+
+            await Task.Delay(1);
+            return null;
         }
     }
 }

@@ -29,4 +29,12 @@
     <Folder Include="Identity\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Views\Summary\Index.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <_ContentIncludedByDefault Remove="Views\Summary\Index.cshtml" />
+  </ItemGroup>
+
 </Project>
