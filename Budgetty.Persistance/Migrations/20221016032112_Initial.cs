@@ -326,6 +326,8 @@ namespace Budgetty.Persistance.Migrations
                     PoolId = table.Column<int>(type: "int", nullable: true),
                     Description = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
+                    Details = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
                     AmountInPennies = table.Column<int>(type: "int", nullable: true),
                     IncomeAllocationEvent_PoolId = table.Column<int>(type: "int", nullable: true),
                     DebtPoolId = table.Column<int>(type: "int", nullable: true),

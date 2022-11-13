@@ -1,16 +1,25 @@
 ﻿using Budgetty.Domain;
 using Budgetty.Mvc.Models.Summary;
+using Budgetty.Services.Interfaces;
 
 namespace Budgetty.Mvc.Mappers
 {
     public class FinancialStateMapper : IFinancialStateMapper
     {
+        private readonly IDateTimeProvider _dateTimeProvider;
+
+        public FinancialStateMapper(IDateTimeProvider dateTimeProvider)
+        {
+            _dateTimeProvider = dateTimeProvider;
+        }
+
         public SummaryViewModel MapToSummaryViewModel(FinancialState financialState)
         {
             var poolBalances = financialState.GetPoolBalancesInPennies();
 
             return new SummaryViewModel
             {
+                CurrentDate = DateOnly.FromDateTime(_dateTimeProvider.GetUtcNow()),
                 UnallocatedIncome = (decimal)financialState.UnallocatedIncomeInPennies / 100,
                 BankAccounts = financialState.GetBankAccountBalancesInPennies()
                     .Select(x => new BankAccountViewModel

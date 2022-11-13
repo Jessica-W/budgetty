@@ -7,7 +7,7 @@ namespace Budgetty.Services;
 public class EventProcessor : IEventProcessor
 {
     public FinancialState ProcessEvents(List<BudgetaryEvent> allEvents, FinancialsSnapshot? financialsSnapshot,
-        List<BudgetaryPool> pools)
+        List<BudgetaryPool> pools, Action<BudgetaryEvent, FinancialState>? callback = null)
     {
         var bankAccounts = pools.Where(x => x.BankAccount != null).Select(x => x.BankAccount!).ToList();
         var financialState = new FinancialState(pools, bankAccounts, financialsSnapshot);
@@ -17,6 +17,11 @@ public class EventProcessor : IEventProcessor
         foreach (dynamic budgetaryEvent in orderedEvents)
         {
             ProcessEvent(budgetaryEvent, financialState);
+
+            if (callback != null)
+            {
+                callback(budgetaryEvent, financialState);
+            }
         }
 
         return financialState;

@@ -5,9 +5,9 @@
         public BudgetaryPool Pool { get; set; } = null!;
         public int AmountInPennies { get; set; }
 
-        protected override string DebugString()
+        protected override string GetDescription()
         {
-            return $"Income allocation of £{AmountInPennies / 100m:0.00} to {Pool.Name}";
+            return $"Income allocation of {AmountInPennies / 100m:C} to {Pool.Name}";
         }
     }
 }

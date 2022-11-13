@@ -1,6 +1,6 @@
 ﻿using Budgetty.Domain;
 
-namespace Budgetty.Services;
+namespace Budgetty.Services.Interfaces;
 
 public interface IFinancialStateService
 {

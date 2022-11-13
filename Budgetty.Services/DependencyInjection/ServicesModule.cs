@@ -10,6 +10,7 @@ namespace Budgetty.Services.DependencyInjection
             builder.RegisterType<EventProcessor>().As<IEventProcessor>().SingleInstance();
             builder.RegisterType<FinancialsSnapshotManager>().As<IFinancialsSnapshotManager>();
             builder.RegisterType<FinancialStateService>().As<IFinancialStateService>();
+            builder.RegisterType<DateTimeProvider>().As<IDateTimeProvider>().SingleInstance();
         }
     }
 }

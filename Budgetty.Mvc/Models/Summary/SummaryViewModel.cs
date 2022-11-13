@@ -2,6 +2,7 @@
 {
     public class SummaryViewModel
     {
+        public DateOnly CurrentDate { get; set; }
         public List<BankAccountViewModel> BankAccounts { get; set; } = new();
         public List<(string PoolName, decimal Balance)> DebtPoolBalances = new();
         public decimal UnallocatedIncome { get; set; }

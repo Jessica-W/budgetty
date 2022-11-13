@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Budgetty.Persistance.Migrations
 {
     [DbContext(typeof(BudgettyDbContext))]
-    [Migration("20221015165619_Initial")]
+    [Migration("20221016032112_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -404,6 +404,10 @@ namespace Budgetty.Persistance.Migrations
                         .HasColumnName("AmountInPennies");
 
                     b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Details")
                         .IsRequired()
                         .HasColumnType("longtext");
 

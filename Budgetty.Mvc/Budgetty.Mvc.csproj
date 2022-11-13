@@ -10,6 +10,7 @@
   <ItemGroup>
     <PackageReference Include="Autofac" Version="6.4.0" />
     <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="8.0.0" />
+    <PackageReference Include="DateOnlyTimeOnly.AspNet" Version="2.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="6.0.9" />
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="6.0.8" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="6.0.8" />
@@ -27,6 +28,7 @@
 
   <ItemGroup>
     <Folder Include="Identity\" />
+    <Folder Include="Views\Shared\EditorTemplate\" />
   </ItemGroup>
 
   <ItemGroup>
@@ -35,6 +37,11 @@
 
   <ItemGroup>
     <_ContentIncludedByDefault Remove="Views\Summary\Index.cshtml" />
+    <_ContentIncludedByDefault Remove="Views\Transactions\Index.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Views\Transactions\Index.cshtml" />
   </ItemGroup>
 
 </Project>

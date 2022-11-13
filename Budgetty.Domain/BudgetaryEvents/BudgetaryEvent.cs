@@ -7,11 +7,11 @@
         public int SequenceNumber { get; set; }
         public string? UserId { get; set; }
 
-        protected abstract string DebugString();
+        protected abstract string GetDescription();
 
         public override string ToString()
         {
-            return DebugString();
+            return GetDescription();
         }
     }
 }

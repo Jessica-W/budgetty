@@ -405,6 +405,10 @@ namespace Budgetty.Persistance.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
+                    b.Property<string>("Details")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
                     b.Property<int>("PoolId")
                         .HasColumnType("int");
 

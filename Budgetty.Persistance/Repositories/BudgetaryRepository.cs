@@ -13,9 +13,30 @@ namespace Budgetty.Persistance.Repositories
             _budgettyDbContext = budgettyDbContext;
         }
 
+        public DateOnly? GetDateOfEarliestBudgetaryEventForUser(string userId)
+        {
+            var earliestEvent = _budgettyDbContext.BudgetaryEvents
+                .Where(x => x.UserId == userId)
+                .OrderBy(x => x.Date)
+                .FirstOrDefault();
+
+            return earliestEvent?.Date;
+        }
+
+        public DateOnly? GetDateOfLatestBudgetaryEventForUser(string userId)
+        {
+            var earliestEvent = _budgettyDbContext.BudgetaryEvents
+                .Where(x => x.UserId == userId)
+                .OrderByDescending(x => x.Date)
+                .FirstOrDefault();
+
+            return earliestEvent?.Date;
+        }
+
         public IEnumerable<BudgetaryEvent> GetBudgetaryEventsForUser(string userId, DateOnly? startDate = null, DateOnly? endDate = null)
         {
-            var query = _budgettyDbContext.BudgetaryEvents.Where(x => x.UserId == userId);
+            var query = _budgettyDbContext.BudgetaryEvents
+                .Where(x => x.UserId == userId);
 
             if (startDate != null)
             {
@@ -27,7 +48,13 @@ namespace Budgetty.Persistance.Repositories
                 query = query.Where(x => x.Date <= endDate);
             }
 
-            return query.AsEnumerable();
+            return query
+                .Include(x => ((IncomeEvent)x).DebtPool)
+                .Include(x => ((IncomeAllocationEvent)x).Pool)
+                .Include(x => ((ExpenditureEvent)x).Pool)
+                .Include(x => ((PoolTransferEvent)x).SourcePool)
+                .Include(x => ((PoolTransferEvent)x).DestinationPool)
+                .OrderBy(x => x.SequenceNumber).AsEnumerable();
         }
 
         public IEnumerable<BudgetaryPool> GetBudgetaryPoolsForUser(string userId, bool includeBankAccounts)

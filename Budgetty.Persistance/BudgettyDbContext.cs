@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Budgetty.Persistance
 {
-    internal class BudgettyDbContext : IdentityDbContext
+    public class BudgettyDbContext : IdentityDbContext
     {
         public DbSet<BudgetaryEvent> BudgetaryEvents { get; set; } = null!;
         public DbSet<BudgetaryPool> BudgetaryPools { get; set; } = null!;

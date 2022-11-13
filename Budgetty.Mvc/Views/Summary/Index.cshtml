@@ -7,7 +7,7 @@
 </head>
 <body>
     <div>
-        <h1>Bank Account Summaries</h1>
+        <h1>Bank Account Summaries as of @Model.CurrentDate.ToLongDateString()</h1>
 
         <ul class="nav nav-tabs" id="myTab" role="tablist">
             @for (var index = 0; index < Model.BankAccounts.Count; index++)

@@ -11,6 +11,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Budgetty.Services", "Budget
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Budgetty.Mvc", "Budgetty.Mvc\Budgetty.Mvc.csproj", "{ABD67FC7-1285-46BA-B057-BD0D5D1FF5F2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Budgetty.TestTool", "Budgetty.TestTool\Budgetty.TestTool.csproj", "{7561B5AE-F65B-4A95-AAA5-94329C92D25B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{ABD67FC7-1285-46BA-B057-BD0D5D1FF5F2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{ABD67FC7-1285-46BA-B057-BD0D5D1FF5F2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{ABD67FC7-1285-46BA-B057-BD0D5D1FF5F2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7561B5AE-F65B-4A95-AAA5-94329C92D25B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7561B5AE-F65B-4A95-AAA5-94329C92D25B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7561B5AE-F65B-4A95-AAA5-94329C92D25B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7561B5AE-F65B-4A95-AAA5-94329C92D25B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

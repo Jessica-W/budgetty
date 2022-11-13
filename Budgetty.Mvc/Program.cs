@@ -27,6 +27,8 @@ namespace Budgetty.Mvc
                 .AddBudgettyDbStores()
                 .AddUserManager<ApplicationUserManager>();
 
+            builder.Services.AddDateOnlyTimeOnlyStringConverters();
+
             builder.Services.AddControllersWithViews();
 
             builder.Services.AddAuthentication()
@@ -57,7 +59,7 @@ namespace Budgetty.Mvc
                 app.UseHsts();
             }
 
-            app.UseHttpsRedirection();
+            //app.UseHttpsRedirection();
             app.UseStaticFiles();
 
             app.UseRouting();
