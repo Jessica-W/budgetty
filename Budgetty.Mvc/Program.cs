@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace Budgetty.Mvc
 {
-    public class Program
+    public static class Program
     {
         public static void Main(string[] args)
         {
