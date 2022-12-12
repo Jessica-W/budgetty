@@ -33,13 +33,13 @@ namespace Budgetty.Mvc.Middleware
             }
             catch (SecurityViolationException ex)
             {
-                _logger.LogWarning(LogEventId.AccessDenied, ex, ex.Message);
+                _logger.LogWarning(LogEventId.AccessDenied, ex, "{message}", ex.Message);
 
                 await SetResponse(context, HttpStatusCode.Forbidden, "Access Denied");
             }
             catch (Exception ex)
             {
-                _logger.LogError(LogEventId.UnhandledException, ex, ex.Message);
+                _logger.LogError(LogEventId.UnhandledException, ex, "{message}", ex.Message);
 
                 await SetResponse(context, HttpStatusCode.InternalServerError, "An unexpected error has occurred");
             }

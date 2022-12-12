@@ -28,7 +28,7 @@ namespace Budgetty.Mvc.Controllers
                         {
                             Id = x.Id,
                             Name = x.Name,
-                            Deletable = !x.BudgetaryEvents.Any()
+                            Deletable = x.BudgetaryEventsAsDestination.Count + x.BudgetaryEventsAsSource.Count == 0,
                         }
                     )
                     .ToList(),
