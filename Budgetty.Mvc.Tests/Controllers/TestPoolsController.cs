@@ -23,9 +23,10 @@ namespace Budgetty.Mvc.Tests.Controllers
                 .Setup(x => x.GetUserId(It.IsAny<ClaimsPrincipal>()))
                 .Returns(UserId);
         }
-        
+
         [Test]
-        public void GivenPoolIdAndCurrentUser_WhenDeleteIsCalled_ThenBudgetaryRepositoryIsUsedToDeleteThePoolAndRedirectToIndexIsReturned()
+        public void
+            GivenPoolIdAndCurrentUser_WhenDeleteIsCalled_ThenBudgetaryRepositoryIsUsedToDeleteThePoolAndRedirectToIndexIsReturned()
         {
             // Given
             const int poolId = 42;
@@ -38,7 +39,8 @@ namespace Budgetty.Mvc.Tests.Controllers
 
             GetMock<IBudgetaryRepository>()
                 .Setup(x => x.SaveChanges())
-                .Callback(() => {
+                .Callback(() =>
+                {
                     if (!deletePoolCalled)
                     {
                         Assert.Fail("SaveChanges called on repository before pool was deleted");
@@ -59,7 +61,8 @@ namespace Budgetty.Mvc.Tests.Controllers
         }
 
         [Test]
-        public void GivenCurrentUserHasOnePoolWithConnectedEventsViaSourcePool_WhenIndexIsCalled_ThenViewResultIsReturnedWithNonDeletablePoolInViewModel()
+        public void
+            GivenCurrentUserHasOnePoolWithConnectedEventsViaSourcePool_WhenIndexIsCalled_ThenViewResultIsReturnedWithNonDeletablePoolInViewModel()
         {
             // Given
             var expectedPools = new List<BudgetaryPool>
@@ -93,7 +96,8 @@ namespace Budgetty.Mvc.Tests.Controllers
         }
 
         [Test]
-        public void GivenCurrentUserHasOnePoolWithConnectedEventsViaDestinationPool_WhenIndexIsCalled_ThenViewResultIsReturnedWithNonDeletablePoolInViewModel()
+        public void
+            GivenCurrentUserHasOnePoolWithConnectedEventsViaDestinationPool_WhenIndexIsCalled_ThenViewResultIsReturnedWithNonDeletablePoolInViewModel()
         {
             // Given
             var expectedPools = new List<BudgetaryPool>
@@ -127,7 +131,8 @@ namespace Budgetty.Mvc.Tests.Controllers
         }
 
         [Test]
-        public void GivenCurrentUserHasOnePoolWithNoConnectedEvents_WhenIndexIsCalled_ThenViewResultIsReturnedWithDeletablePoolInViewModel()
+        public void
+            GivenCurrentUserHasOnePoolWithNoConnectedEvents_WhenIndexIsCalled_ThenViewResultIsReturnedWithDeletablePoolInViewModel()
         {
             // Given
             var expectedPools = new List<BudgetaryPool>
@@ -135,7 +140,7 @@ namespace Budgetty.Mvc.Tests.Controllers
                 BuildObject<BudgetaryPool>()
                     .Without(x => x.BankAccount)
                     .With(x => x.BudgetaryEventsAsDestination, new List<BudgetaryEvent>())
-                    .With(x => x.BudgetaryEventsAsSource, new List<BudgetaryEvent> { new() })
+                    .With(x => x.BudgetaryEventsAsSource, new List<BudgetaryEvent>())
                     .Create(),
             };
 
