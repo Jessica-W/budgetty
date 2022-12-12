@@ -1,5 +1,8 @@
-﻿namespace Budgetty.Domain.BudgetaryEvents
+﻿using System.Diagnostics.CodeAnalysis;
+
+namespace Budgetty.Domain.BudgetaryEvents
 {
+    [ExcludeFromCodeCoverage]
     public class BudgetaryEvent
     {
         public int Id { get; set; }
@@ -18,7 +21,7 @@
             Expenditure,
             IncomeAllocation,
             Income,
-            PoolTransfer
+            PoolTransfer,
         }
     }
 }

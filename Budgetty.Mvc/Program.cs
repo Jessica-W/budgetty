@@ -7,9 +7,11 @@ using Budgetty.Persistance.DependencyInjection;
 using Budgetty.Services.DependencyInjection;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.ApplicationInsights.AspNetCore.Extensions;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Budgetty.Mvc
 {
+    [ExcludeFromCodeCoverage]
     public static class Program
     {
         public static void Main(string[] args)

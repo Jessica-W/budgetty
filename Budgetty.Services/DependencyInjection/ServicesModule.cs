@@ -1,8 +1,10 @@
 ﻿using Autofac;
 using Budgetty.Services.Interfaces;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Budgetty.Services.DependencyInjection
 {
+    [ExcludeFromCodeCoverage]
     public class ServicesModule : Module
     {
         protected override void Load(ContainerBuilder builder)

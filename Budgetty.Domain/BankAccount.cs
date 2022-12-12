@@ -1,5 +1,8 @@
-﻿namespace Budgetty.Domain
+﻿using System.Diagnostics.CodeAnalysis;
+
+namespace Budgetty.Domain
 {
+    [ExcludeFromCodeCoverage]
     public class BankAccount
     {
         public int Id { get; set; }

@@ -1,5 +1,8 @@
+using System.Diagnostics.CodeAnalysis;
+
 namespace Budgetty.Mvc;
 
+[ExcludeFromCodeCoverage]
 public class AppInsightsConfig
 {
     public string ConnectionString { get; set; } = string.Empty;

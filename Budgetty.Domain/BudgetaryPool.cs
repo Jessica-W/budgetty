@@ -1,7 +1,9 @@
 ﻿using Budgetty.Domain.BudgetaryEvents;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Budgetty.Domain
 {
+    [ExcludeFromCodeCoverage]
     public class BudgetaryPool
     {
         private BankAccount? _bankAccount;
