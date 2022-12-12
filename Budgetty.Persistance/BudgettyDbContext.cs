@@ -33,9 +33,6 @@ namespace Budgetty.Persistance
             modelBuilder.Entity<BudgetaryPool>()
                 .HasOne(x => x.BankAccount)
                 .WithMany(x => x.BudgetaryPools);
-
-            modelBuilder.Entity<BudgetaryPool>()
-                .Ignore(x => x.BudgetaryEvents);
         }
     }
 }

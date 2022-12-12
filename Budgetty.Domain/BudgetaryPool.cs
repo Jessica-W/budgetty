@@ -30,8 +30,5 @@ namespace Budgetty.Domain
 
         public List<BudgetaryEvent> BudgetaryEventsAsSource { get; set; } = new();
         public List<BudgetaryEvent> BudgetaryEventsAsDestination { get; set; } = new();
-
-        public List<BudgetaryEvent> BudgetaryEvents =>
-            BudgetaryEventsAsSource.Union(BudgetaryEventsAsDestination).ToList();
     }
 }
