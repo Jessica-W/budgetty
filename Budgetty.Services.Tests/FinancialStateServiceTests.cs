@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using Budgetty.Domain;
 using Budgetty.Domain.BudgetaryEvents;
 using Budgetty.Persistance.Repositories;
@@ -7,6 +8,8 @@ using Moq;
 
 namespace Budgetty.Services.Tests
 {
+    [TestFixture]
+    [ExcludeFromCodeCoverage]
     public class FinancialStateServiceTests : TestBase<FinancialStateService>
     {
         protected override void SetUp()

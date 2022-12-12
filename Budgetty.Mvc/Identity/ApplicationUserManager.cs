@@ -1,8 +1,6 @@
 ﻿using Budgetty.Domain;
-using Budgetty.Domain.BudgetaryEvents;
 using Budgetty.Persistance;
 using Budgetty.Persistance.Repositories;
-using Budgetty.Services;
 using Budgetty.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;

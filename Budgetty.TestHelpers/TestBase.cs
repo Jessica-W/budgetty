@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Reflection;
 using AutoFixture;
 using AutoFixture.AutoMoq;
 using AutoFixture.Dsl;
@@ -7,7 +8,8 @@ using NUnit.Framework;
 
 namespace Budgetty.TestHelpers;
 
-public class TestBase<TClassUnderTest> : IMockCreationSynchronizer where TClassUnderTest : class
+[ExcludeFromCodeCoverage]
+public abstract class TestBase<TClassUnderTest> : IMockCreationSynchronizer where TClassUnderTest : class
 {
     private const string DefaultMockName = "default";
 
@@ -15,12 +17,14 @@ public class TestBase<TClassUnderTest> : IMockCreationSynchronizer where TClassU
     private static readonly IFixture TestDataFixture;
 
     private readonly MethodInfo _fixtureRegistrarInjectMethodInfo =
-        typeof(FixtureRegistrar).GetMethod(nameof(FixtureRegistrar.Inject)) ?? throw new InvalidOperationException("Unable to get MethodInfo for FixtureRegistrar.Inject");
+        typeof(FixtureRegistrar).GetMethod(nameof(FixtureRegistrar.Inject)) ??
+        throw new InvalidOperationException("Unable to get MethodInfo for FixtureRegistrar.Inject");
 
     private TClassUnderTest? _classUnderTest;
+
     private IFixture? _fixture;
     private Dictionary<Type, Dictionary<string, Mock>> _injectedMocks = new();
-    
+
     static TestBase()
     {
         TestDataFixture = CreateNewDataFixture();
@@ -39,20 +43,11 @@ public class TestBase<TClassUnderTest> : IMockCreationSynchronizer where TClassU
     public void SynchronizeMock(Type type, Mock mock)
     {
         if (_injectedMocks.ContainsKey(type))
-        {
-            throw new InvalidOperationException($"Duplicate mock for {type.Name} detected. Fixture can only have one mock per type.");
-        }
+            throw new InvalidOperationException(
+                $"Duplicate mock for {type.Name} detected. Fixture can only have one mock per type.");
 
         _injectedMocks.Add(type, new Dictionary<string, Mock> { { DefaultMockName, mock } });
         InjectMock(type, mock);
-    }
-
-    private void InjectMock(Type type, Mock mock)
-    {
-        EnsureSetupWasCalled();
-
-        var injectMethodInfo = _fixtureRegistrarInjectMethodInfo.MakeGenericMethod(type);
-        injectMethodInfo.Invoke(null, new[] { _fixture, mock.Object });
     }
 
     [SetUp]
@@ -65,9 +60,7 @@ public class TestBase<TClassUnderTest> : IMockCreationSynchronizer where TClassU
         SetUp();
     }
 
-    protected virtual void SetUp()
-    {
-    }
+    protected abstract void SetUp();
 
     protected Mock<TMock> GetMock<TMock>(string name = DefaultMockName) where TMock : class
     {
@@ -99,7 +92,10 @@ public class TestBase<TClassUnderTest> : IMockCreationSynchronizer where TClassU
 
     protected virtual TClassUnderTest CreateDefaultClassUnderTest()
     {
-        return _fixture.Create<TClassUnderTest>();
+        return _fixture
+            ?.Build<TClassUnderTest>()
+            .OmitAutoProperties()
+            .Create() ?? throw new InvalidOperationException("Unable to create class under test");
     }
 
     protected static ICustomizationComposer<TObject> BuildObject<TObject>()
@@ -119,9 +115,25 @@ public class TestBase<TClassUnderTest> : IMockCreationSynchronizer where TClassU
             : TestDataFixture.Build<TObject>().CreateMany();
     }
 
+    private void InjectMock(Type type, Mock mock)
+    {
+        EnsureSetupWasCalled();
+
+        var injectMethodInfo = _fixtureRegistrarInjectMethodInfo.MakeGenericMethod(type);
+        injectMethodInfo.Invoke(null, new[] { _fixture, mock.Object });
+    }
+
     private static IFixture CreateNewDataFixture()
     {
-        return new Fixture();
+        var fixture = new Fixture();
+        fixture.Customizations.Add(new DateOnlySpecimenBuilder());
+        fixture.Behaviors
+            .OfType<ThrowingRecursionBehavior>()
+            .ToList()
+            .ForEach(x => fixture.Behaviors.Remove(x));
+        fixture.Behaviors.Add(new OmitOnRecursionBehavior(3));
+
+        return fixture;
     }
 
     private IFixture CreateNewFixture()
@@ -129,6 +141,7 @@ public class TestBase<TClassUnderTest> : IMockCreationSynchronizer where TClassU
         var autoMoqCustomization = new AutoMoqCustomization();
         var oldRelay = autoMoqCustomization.Relay;
         autoMoqCustomization.Relay = new ReturnDefaultValueRelay(new MockSynchronizerRelay(this, oldRelay));
+        autoMoqCustomization.ConfigureMembers = false;
 
         var fixture = new Fixture();
         fixture.Customize(autoMoqCustomization);
