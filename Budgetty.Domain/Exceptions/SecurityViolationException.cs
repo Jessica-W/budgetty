@@ -1,7 +1,9 @@
-﻿using System.Runtime.Serialization;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Runtime.Serialization;
 
 namespace Budgetty.Domain.Exceptions
 {
+    [ExcludeFromCodeCoverage]
     [Serializable]
     public class SecurityViolationException : Exception
     {

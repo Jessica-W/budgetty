@@ -1,10 +1,12 @@
-﻿using Budgetty.Domain;
+﻿using System.Diagnostics.CodeAnalysis;
+using Budgetty.Domain;
 using Budgetty.Domain.BudgetaryEvents;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace Budgetty.Persistance
 {
+    [ExcludeFromCodeCoverage]
     public class BudgettyDbContext : IdentityDbContext
     {
         public DbSet<BudgetaryEvent> BudgetaryEvents { get; set; } = null!;

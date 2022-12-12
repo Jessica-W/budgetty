@@ -1,4 +1,5 @@
-﻿using Autofac;
+﻿using System.Diagnostics.CodeAnalysis;
+using Autofac;
 using Budgetty.Domain;
 using Budgetty.Domain.BudgetaryEvents;
 using Budgetty.Persistance;
@@ -10,6 +11,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Budgetty.TestTool;
 
+[ExcludeFromCodeCoverage]
 public static class Program
 {
     public static void Main()
