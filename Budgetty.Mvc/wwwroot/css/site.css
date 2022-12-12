@@ -13,3 +13,9 @@ html {
 body {
   margin-bottom: 60px;
 }
+
+.table td.fit,
+.table th.fit {
+    white-space: nowrap;
+    width: 1%;
+}

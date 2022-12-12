@@ -38,7 +38,7 @@ namespace Budgetty.Services.Tests
                 .Verifiable();
 
             mockBudgetaryRepository
-                .Setup(x => x.GetBudgetaryPoolsForUser(userId, true))
+                .Setup(x => x.GetBudgetaryPoolsForUser(userId, true, false))
                 .Returns(pools)
                 .Verifiable();
 

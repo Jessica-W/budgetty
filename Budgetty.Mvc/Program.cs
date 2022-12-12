@@ -2,9 +2,11 @@ using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using Budgetty.Mvc.DependencyInjection;
 using Budgetty.Mvc.Identity;
+using Budgetty.Mvc.Middleware;
 using Budgetty.Persistance.DependencyInjection;
 using Budgetty.Services.DependencyInjection;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.ApplicationInsights.AspNetCore.Extensions;
 
 namespace Budgetty.Mvc
 {
@@ -31,18 +33,15 @@ namespace Budgetty.Mvc
 
             builder.Services.AddControllersWithViews();
 
-            builder.Services.AddAuthentication()
-                .AddGoogle(options =>
-                {
-                    options.ClientId = "512944185798-32mbpb62mbsut9j3pc2kelf1rt4eho41.apps.googleusercontent.com";
-                    options.ClientSecret = "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";
-                });
+            AddGoogleOAuth(builder.Configuration, builder.Services);
 
-            builder.Host.ConfigureContainer<ContainerBuilder>(builder =>
+            AddApplicationInsights(builder.Configuration, builder.Services);
+
+            builder.Host.ConfigureContainer<ContainerBuilder>(containerBuilder =>
             {
-                builder.RegisterModule<ServicesModule>();
-                builder.RegisterModule<PersistenceModule>();
-                builder.RegisterModule<MappersModule>();
+                containerBuilder.RegisterModule<ServicesModule>();
+                containerBuilder.RegisterModule<PersistenceModule>();
+                containerBuilder.RegisterModule<MappersModule>();
             });
 
             var app = builder.Build();
@@ -59,7 +58,9 @@ namespace Budgetty.Mvc
                 app.UseHsts();
             }
 
-            //app.UseHttpsRedirection();
+            app.UseMiddleware<LoggingMiddleware>();
+
+            app.UseHttpsRedirection();
             app.UseStaticFiles();
 
             app.UseRouting();
@@ -73,6 +74,40 @@ namespace Budgetty.Mvc
             app.MapRazorPages();
 
             app.Run();
+        }
+
+        private static void AddGoogleOAuth(ConfigurationManager configuration, IServiceCollection services)
+        {
+            var googleOAuthConfig = GetConfig<GoogleOAuthConfig>(configuration, "GoogleOAuth");
+
+            services.AddAuthentication()
+                .AddGoogle(options =>
+                {
+                    options.ClientId = googleOAuthConfig.ClientId;
+                    options.ClientSecret = googleOAuthConfig.ClientSecret;
+                });
+        }
+
+        private static void AddApplicationInsights(IConfiguration configuration, IServiceCollection services)
+        {
+            var appInsightsConfig = GetConfig<AppInsightsConfig>(configuration, "AppInsights");
+
+            var applicationInsightsOptions = new ApplicationInsightsServiceOptions
+            {
+                ConnectionString = appInsightsConfig.ConnectionString,
+                EnableAdaptiveSampling = false,
+                EnableQuickPulseMetricStream = appInsightsConfig.EnableQuickPulseMetricStream,
+                EnableEventCounterCollectionModule = appInsightsConfig.EnableEventCounterCollectionModule,
+                EnablePerformanceCounterCollectionModule = appInsightsConfig.EnablePerformanceCounterCollectionModule,
+                EnableHeartbeat = appInsightsConfig.EnableHeartbeat,
+            };
+
+            services.AddApplicationInsightsTelemetry(applicationInsightsOptions);
+        }
+
+        private static T GetConfig<T>(IConfiguration configuration, string key)
+        {
+            return configuration.GetSection(key).Get<T>();
         }
     }
 }

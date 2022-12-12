@@ -2,6 +2,8 @@
 using Budgetty.Domain.BudgetaryEvents;
 using Budgetty.Persistance;
 using Budgetty.Persistance.Repositories;
+using Budgetty.Services;
+using Budgetty.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 
@@ -12,12 +14,14 @@ public class ApplicationUserManager : UserManager<IdentityUser>
     private readonly ISequenceNumberProvider _sequenceNumberProvider;
     private readonly ISnapshotLockManager _snapshotLockManager;
     private readonly IBudgetaryRepository _budgetaryRepository;
+    private readonly IBudgetaryEventFactory _budgetaryEventFactory;
     
-    public ApplicationUserManager(IUserStore<IdentityUser> store, IOptions<IdentityOptions> optionsAccessor, IPasswordHasher<IdentityUser> passwordHasher, IEnumerable<IUserValidator<IdentityUser>> userValidators, IEnumerable<IPasswordValidator<IdentityUser>> passwordValidators, ILookupNormalizer keyNormalizer, IdentityErrorDescriber errors, IServiceProvider services, ILogger<UserManager<IdentityUser>> logger, ISequenceNumberProvider sequenceNumberProvider, ISnapshotLockManager snapshotLockManager, IBudgetaryRepository budgetaryRepository) : base(store, optionsAccessor, passwordHasher, userValidators, passwordValidators, keyNormalizer, errors, services, logger)
+    public ApplicationUserManager(IUserStore<IdentityUser> store, IOptions<IdentityOptions> optionsAccessor, IPasswordHasher<IdentityUser> passwordHasher, IEnumerable<IUserValidator<IdentityUser>> userValidators, IEnumerable<IPasswordValidator<IdentityUser>> passwordValidators, ILookupNormalizer keyNormalizer, IdentityErrorDescriber errors, IServiceProvider services, ILogger<UserManager<IdentityUser>> logger, ISequenceNumberProvider sequenceNumberProvider, ISnapshotLockManager snapshotLockManager, IBudgetaryRepository budgetaryRepository, IBudgetaryEventFactory budgetaryEventFactory) : base(store, optionsAccessor, passwordHasher, userValidators, passwordValidators, keyNormalizer, errors, services, logger)
     {
         _sequenceNumberProvider = sequenceNumberProvider;
         _snapshotLockManager = snapshotLockManager;
         _budgetaryRepository = budgetaryRepository;
+        _budgetaryEventFactory = budgetaryEventFactory;
     }
 
     public override async Task<IdentityResult> CreateAsync(IdentityUser user)
@@ -95,58 +99,13 @@ public class ApplicationUserManager : UserManager<IdentityUser>
         _budgetaryRepository.AddBudgetaryPool(incomePoolC);
         _budgetaryRepository.AddBudgetaryPool(incomePoolD);
 
-        _budgetaryRepository.AddBudgetaryEvent(new IncomeEvent
-        {
-            Date = now,
-            UserId = userId,
-            AmountInPennies = 70,
-            SequenceNumber = _sequenceNumberProvider.GetNextSequenceNumber(userId),
-        });
+        _budgetaryRepository.AddBudgetaryEvent(_budgetaryEventFactory.CreateIncomeEvent(now, userId, 70));
+        _budgetaryRepository.AddBudgetaryEvent(_budgetaryEventFactory.CreateIncomeEvent(now, userId, 100, debtPoolA));
 
-        _budgetaryRepository.AddBudgetaryEvent(new IncomeEvent
-        {
-            Date = now,
-            UserId = userId,
-            AmountInPennies = 100,
-            DebtPool = debtPoolA,
-            SequenceNumber = _sequenceNumberProvider.GetNextSequenceNumber(userId),
-        });
-
-        _budgetaryRepository.AddBudgetaryEvent(new IncomeAllocationEvent
-        {
-            UserId = userId,
-            AmountInPennies = 25,
-            Date = now,
-            Pool = incomePoolA,
-            SequenceNumber = _sequenceNumberProvider.GetNextSequenceNumber(userId),
-        });
-
-        _budgetaryRepository.AddBudgetaryEvent(new IncomeAllocationEvent
-        {
-            UserId = userId,
-            AmountInPennies = 20,
-            Date = now,
-            Pool = incomePoolB,
-            SequenceNumber = _sequenceNumberProvider.GetNextSequenceNumber(userId),
-        });
-
-        _budgetaryRepository.AddBudgetaryEvent(new IncomeAllocationEvent
-        {
-            UserId = userId,
-            AmountInPennies = 10,
-            Date = now,
-            Pool = incomePoolC,
-            SequenceNumber = _sequenceNumberProvider.GetNextSequenceNumber(userId),
-        });
-
-        _budgetaryRepository.AddBudgetaryEvent(new IncomeAllocationEvent
-        {
-            UserId = userId,
-            AmountInPennies = 5,
-            Date = now,
-            Pool = incomePoolD,
-            SequenceNumber = _sequenceNumberProvider.GetNextSequenceNumber(userId),
-        });
+        _budgetaryRepository.AddBudgetaryEvent(_budgetaryEventFactory.CreateIncomeAllocationEvent(now, userId, 25, incomePoolA));
+        _budgetaryRepository.AddBudgetaryEvent(_budgetaryEventFactory.CreateIncomeAllocationEvent(now, userId, 20, incomePoolB));
+        _budgetaryRepository.AddBudgetaryEvent(_budgetaryEventFactory.CreateIncomeAllocationEvent(now, userId, 10, incomePoolC));
+        _budgetaryRepository.AddBudgetaryEvent(_budgetaryEventFactory.CreateIncomeAllocationEvent(now, userId, 5, incomePoolD));
 
         _budgetaryRepository.SaveChanges();
     }

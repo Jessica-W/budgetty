@@ -1,17 +1,24 @@
 ﻿namespace Budgetty.Domain.BudgetaryEvents
 {
-    public abstract class BudgetaryEvent
+    public class BudgetaryEvent
     {
         public int Id { get; set; }
+        public BudgetaryEventType EventType { get; set; }
         public DateOnly Date { get; set; }
         public int SequenceNumber { get; set; }
         public string? UserId { get; set; }
+        public int AmountInPennies { get; set; }
+        public string Description { get; set; } = string.Empty;
 
-        protected abstract string GetDescription();
+        public BudgetaryPool? SourcePool { get; set; }
+        public BudgetaryPool? DestinationPool { get; set; }
 
-        public override string ToString()
+        public enum BudgetaryEventType
         {
-            return GetDescription();
+            Expenditure,
+            IncomeAllocation,
+            Income,
+            PoolTransfer
         }
     }
 }

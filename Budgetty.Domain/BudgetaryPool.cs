@@ -1,4 +1,6 @@
-﻿namespace Budgetty.Domain
+﻿using Budgetty.Domain.BudgetaryEvents;
+
+namespace Budgetty.Domain
 {
     public class BudgetaryPool
     {
@@ -25,5 +27,11 @@
         }
 
         public string? UserId { get; set; }
+
+        public List<BudgetaryEvent> BudgetaryEventsAsSource { get; set; } = new();
+        public List<BudgetaryEvent> BudgetaryEventsAsDestination { get; set; } = new();
+
+        public List<BudgetaryEvent> BudgetaryEvents =>
+            BudgetaryEventsAsSource.Union(BudgetaryEventsAsDestination).ToList();
     }
 }

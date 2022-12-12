@@ -1,5 +1,6 @@
 ﻿using Budgetty.Domain;
 using Budgetty.Domain.BudgetaryEvents;
+using Budgetty.Domain.Exceptions;
 using Microsoft.EntityFrameworkCore;
 
 namespace Budgetty.Persistance.Repositories
@@ -49,21 +50,26 @@ namespace Budgetty.Persistance.Repositories
             }
 
             return query
-                .Include(x => ((IncomeEvent)x).DebtPool)
-                .Include(x => ((IncomeAllocationEvent)x).Pool)
-                .Include(x => ((ExpenditureEvent)x).Pool)
-                .Include(x => ((PoolTransferEvent)x).SourcePool)
-                .Include(x => ((PoolTransferEvent)x).DestinationPool)
+                .Include(x => x.SourcePool)
+                .Include(x => x.DestinationPool)
                 .OrderBy(x => x.SequenceNumber).AsEnumerable();
         }
 
-        public IEnumerable<BudgetaryPool> GetBudgetaryPoolsForUser(string userId, bool includeBankAccounts)
+        public IEnumerable<BudgetaryPool> GetBudgetaryPoolsForUser(string userId, bool includeBankAccounts, bool includeBudgetaryEvents)
         {
-            var query = _budgettyDbContext.BudgetaryPools.Where(x => x.UserId == userId);
+            var query = _budgettyDbContext.BudgetaryPools
+                .Where(x => x.UserId == userId);
 
             if (includeBankAccounts)
             {
                 query = query.Include(x => x.BankAccount);
+            }
+
+            if (includeBudgetaryEvents)
+            {
+                query = query
+                    .Include(x => x.BudgetaryEventsAsDestination)
+                    .Include(x => x.BudgetaryEventsAsSource);
             }
 
             return query.AsEnumerable();
@@ -92,6 +98,21 @@ namespace Budgetty.Persistance.Repositories
         public void SaveChanges()
         {
             _budgettyDbContext.SaveChanges();
+        }
+
+        public void DeletePool(string userId, int poolId)
+        {
+            var pool = _budgettyDbContext.BudgetaryPools.FirstOrDefault(x => x.Id == poolId);
+
+            if (pool != null)
+            {
+                if (pool.UserId != userId)
+                {
+                    throw new SecurityViolationException("Attempt to delete another user's budgetary pool");
+                }
+
+                _budgettyDbContext.BudgetaryPools.Remove(pool);
+            }
         }
     }
 }

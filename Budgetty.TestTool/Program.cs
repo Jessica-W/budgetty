@@ -5,8 +5,8 @@ using Budgetty.Persistance;
 using Budgetty.Persistance.DependencyInjection;
 using Budgetty.Persistance.Repositories;
 using Budgetty.Services.DependencyInjection;
+using Budgetty.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Internal;
 
 namespace Budgetty.TestTool;
 
@@ -25,14 +25,14 @@ public static class Program
         {
             var dbContext = scope.Resolve<BudgettyDbContext>();
             var budgetaryRepository = scope.Resolve<IBudgetaryRepository>();
-            var sequenceNumberProvider = scope.Resolve<ISequenceNumberProvider>();
+            var budgetaryEventFactory = scope.Resolve<IBudgetaryEventFactory>();
 
             var userId = dbContext.Users.First().Id;
-            CreateTestData(budgetaryRepository, sequenceNumberProvider, userId);
+            CreateTestData(budgetaryRepository, budgetaryEventFactory, userId);
         }
     }
 
-    private static void CreateTestData(IBudgetaryRepository budgetaryRepository, ISequenceNumberProvider sequenceNumberProvider, string userId)
+    private static void CreateTestData(IBudgetaryRepository budgetaryRepository, IBudgetaryEventFactory budgetaryEventFactory, string userId)
     {
         var now = DateOnly.FromDateTime(DateTime.UtcNow);
 
@@ -92,72 +92,16 @@ public static class Program
         budgetaryRepository.AddBudgetaryPool(incomePoolC);
         budgetaryRepository.AddBudgetaryPool(incomePoolD);
 
-        budgetaryRepository.AddBudgetaryEvent(new IncomeEvent
-        {
-            Date = now,
-            UserId = userId,
-            AmountInPennies = 70,
-            SequenceNumber = sequenceNumberProvider.GetNextSequenceNumber(userId),
-        });
-
-        budgetaryRepository.AddBudgetaryEvent(new IncomeEvent
-        {
-            Date = now,
-            UserId = userId,
-            AmountInPennies = 100,
-            DebtPool = debtPoolA,
-            SequenceNumber = sequenceNumberProvider.GetNextSequenceNumber(userId),
-        });
-
-        budgetaryRepository.AddBudgetaryEvent(new IncomeAllocationEvent
-        {
-            UserId = userId,
-            AmountInPennies = 25,
-            Date = now,
-            Pool = incomePoolA,
-            SequenceNumber = sequenceNumberProvider.GetNextSequenceNumber(userId),
-        });
-
-        budgetaryRepository.AddBudgetaryEvent(new IncomeAllocationEvent
-        {
-            UserId = userId,
-            AmountInPennies = 20,
-            Date = now,
-            Pool = incomePoolB,
-            SequenceNumber = sequenceNumberProvider.GetNextSequenceNumber(userId),
-        });
-
-        budgetaryRepository.AddBudgetaryEvent(new IncomeAllocationEvent
-        {
-            UserId = userId,
-            AmountInPennies = 10,
-            Date = now,
-            Pool = incomePoolC,
-            SequenceNumber = sequenceNumberProvider.GetNextSequenceNumber(userId),
-        });
-
-        budgetaryRepository.AddBudgetaryEvent(new IncomeAllocationEvent
-        {
-            UserId = userId,
-            AmountInPennies = 5,
-            Date = now,
-            Pool = incomePoolD,
-            SequenceNumber = sequenceNumberProvider.GetNextSequenceNumber(userId),
-        });
+        budgetaryRepository.AddBudgetaryEvent(budgetaryEventFactory.CreateIncomeEvent(now, userId, 70));
+        budgetaryRepository.AddBudgetaryEvent(budgetaryEventFactory.CreateIncomeEvent(now, userId, 100, debtPoolA));
+        budgetaryRepository.AddBudgetaryEvent(budgetaryEventFactory.CreateIncomeAllocationEvent(now, userId, 25, incomePoolA));
+        budgetaryRepository.AddBudgetaryEvent(budgetaryEventFactory.CreateIncomeAllocationEvent(now, userId, 20, incomePoolB));
+        budgetaryRepository.AddBudgetaryEvent(budgetaryEventFactory.CreateIncomeAllocationEvent(now, userId, 10, incomePoolC));
+        budgetaryRepository.AddBudgetaryEvent(budgetaryEventFactory.CreateIncomeAllocationEvent(now, userId, 5, incomePoolD));
 
         budgetaryRepository.SaveChanges();
     }
-
-    private static void AddEvent(ISequenceNumberProvider sequenceNumberProvider, string userId, BudgettyDbContext dbContext)
-    {
-        var sequenceNumber = sequenceNumberProvider.GetNextSequenceNumber(userId);
-        dbContext.BudgetaryEvents.Add(new IncomeEvent
-        {
-            Date = DateOnly.FromDateTime(DateTime.UtcNow), AmountInPennies = 20, UserId = userId,
-            SequenceNumber = sequenceNumber
-        });
-    }
-
+    
     private static void RegisterDbContext(ContainerBuilder builder)
     {
         const string connectionString =

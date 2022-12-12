@@ -316,21 +316,14 @@ namespace Budgetty.Persistance.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    EventType = table.Column<int>(type: "int", nullable: false),
                     Date = table.Column<DateOnly>(type: "date", nullable: false),
                     SequenceNumber = table.Column<int>(type: "int", nullable: false),
-                    UserId = table.Column<string>(type: "varchar(255)", nullable: true)
+                    UserId = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    EventType = table.Column<string>(type: "longtext", nullable: false)
+                    AmountInPennies = table.Column<int>(type: "int", nullable: false),
+                    Description = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    FinancialsSnapshotId = table.Column<Guid>(type: "char(36)", nullable: true, collation: "ascii_general_ci"),
-                    PoolId = table.Column<int>(type: "int", nullable: true),
-                    Description = table.Column<string>(type: "longtext", nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    Details = table.Column<string>(type: "longtext", nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    AmountInPennies = table.Column<int>(type: "int", nullable: true),
-                    IncomeAllocationEvent_PoolId = table.Column<int>(type: "int", nullable: true),
-                    DebtPoolId = table.Column<int>(type: "int", nullable: true),
                     SourcePoolId = table.Column<int>(type: "int", nullable: true),
                     DestinationPoolId = table.Column<int>(type: "int", nullable: true)
                 },
@@ -338,38 +331,14 @@ namespace Budgetty.Persistance.Migrations
                 {
                     table.PrimaryKey("PK_BudgetaryEvents", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_BudgetaryEvents_BudgetaryPools_DebtPoolId",
-                        column: x => x.DebtPoolId,
-                        principalTable: "BudgetaryPools",
-                        principalColumn: "Id");
-                    table.ForeignKey(
                         name: "FK_BudgetaryEvents_BudgetaryPools_DestinationPoolId",
                         column: x => x.DestinationPoolId,
                         principalTable: "BudgetaryPools",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_BudgetaryEvents_BudgetaryPools_IncomeAllocationEvent_PoolId",
-                        column: x => x.IncomeAllocationEvent_PoolId,
-                        principalTable: "BudgetaryPools",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_BudgetaryEvents_BudgetaryPools_PoolId",
-                        column: x => x.PoolId,
-                        principalTable: "BudgetaryPools",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_BudgetaryEvents_BudgetaryPools_SourcePoolId",
                         column: x => x.SourcePoolId,
                         principalTable: "BudgetaryPools",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_BudgetaryEvents_FinancialsSnapshots_FinancialsSnapshotId",
-                        column: x => x.FinancialsSnapshotId,
-                        principalTable: "FinancialsSnapshots",
                         principalColumn: "Id");
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
@@ -449,40 +418,14 @@ namespace Budgetty.Persistance.Migrations
                 column: "FinancialsSnapshotId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_BudgetaryEvents_DebtPoolId",
-                table: "BudgetaryEvents",
-                column: "DebtPoolId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_BudgetaryEvents_DestinationPoolId",
                 table: "BudgetaryEvents",
                 column: "DestinationPoolId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_BudgetaryEvents_FinancialsSnapshotId",
-                table: "BudgetaryEvents",
-                column: "FinancialsSnapshotId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_BudgetaryEvents_IncomeAllocationEvent_PoolId",
-                table: "BudgetaryEvents",
-                column: "IncomeAllocationEvent_PoolId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_BudgetaryEvents_PoolId",
-                table: "BudgetaryEvents",
-                column: "PoolId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_BudgetaryEvents_SourcePoolId",
                 table: "BudgetaryEvents",
                 column: "SourcePoolId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_BudgetaryEvents_UserId_SequenceNumber",
-                table: "BudgetaryEvents",
-                columns: new[] { "UserId", "SequenceNumber" },
-                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_BudgetaryPools_BankAccountId",

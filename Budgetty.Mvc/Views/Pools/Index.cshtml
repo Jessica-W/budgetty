@@ -2,9 +2,32 @@
 
 <h3>Pools</h3>
 
-<ul>
-    @foreach (var pool in Model.Pools)
-    {
-        <li>@pool</li>
-    }
-</ul>
+<table class="table table-striped align-middle">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th class="fit">Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var pool in Model.Pools)
+        {
+            <tr>
+                <td>@pool.Name</td>
+                <td class="text-center">
+                    @{
+                        <form method="post" asp-controller="Pools" asp-action="Delete">
+                            <input type="hidden" name="poolId" value="@pool.Id" />
+                            @if (pool.Deletable)
+                            {
+                                <button type="submit" class="btn btn-sm">
+                                    <i class="fas fa-remove fa-2x text-danger"></i>
+                                </button>
+                            }
+                        </form>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

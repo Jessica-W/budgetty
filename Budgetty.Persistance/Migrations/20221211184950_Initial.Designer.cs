@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Budgetty.Persistance.Migrations
 {
     [DbContext(typeof(BudgettyDbContext))]
-    [Migration("20221016032112_Initial")]
+    [Migration("20221211184950_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -69,29 +69,38 @@ namespace Budgetty.Persistance.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
+                    b.Property<int>("AmountInPennies")
+                        .HasColumnType("int");
+
                     b.Property<DateOnly>("Date")
                         .HasColumnType("date");
 
-                    b.Property<string>("EventType")
+                    b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<Guid?>("FinancialsSnapshotId")
-                        .HasColumnType("char(36)");
+                    b.Property<int?>("DestinationPoolId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("EventType")
+                        .HasColumnType("int");
 
                     b.Property<int>("SequenceNumber")
                         .HasColumnType("int");
 
+                    b.Property<int?>("SourcePoolId")
+                        .HasColumnType("int");
+
                     b.Property<string>("UserId")
-                        .HasColumnType("varchar(255)");
+                        .HasColumnType("longtext");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("FinancialsSnapshotId");
+                    b.HasIndex("DestinationPoolId");
+
+                    b.HasIndex("SourcePoolId");
 
                     b.ToTable("BudgetaryEvents");
-
-                    b.HasDiscriminator<string>("EventType").HasValue("BudgetaryEvent");
                 });
 
             modelBuilder.Entity("Budgetty.Domain.BudgetaryPool", b =>
@@ -394,91 +403,6 @@ namespace Budgetty.Persistance.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("Budgetty.Domain.BudgetaryEvents.ExpenditureEvent", b =>
-                {
-                    b.HasBaseType("Budgetty.Domain.BudgetaryEvents.BudgetaryEvent");
-
-                    b.Property<int>("AmountInPennies")
-                        .ValueGeneratedOnUpdateSometimes()
-                        .HasColumnType("int")
-                        .HasColumnName("AmountInPennies");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("Details")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<int>("PoolId")
-                        .HasColumnType("int");
-
-                    b.HasIndex("PoolId");
-
-                    b.HasIndex("UserId", "SequenceNumber")
-                        .IsUnique();
-
-                    b.HasDiscriminator().HasValue("expenditure_event");
-                });
-
-            modelBuilder.Entity("Budgetty.Domain.BudgetaryEvents.IncomeAllocationEvent", b =>
-                {
-                    b.HasBaseType("Budgetty.Domain.BudgetaryEvents.BudgetaryEvent");
-
-                    b.Property<int>("AmountInPennies")
-                        .ValueGeneratedOnUpdateSometimes()
-                        .HasColumnType("int")
-                        .HasColumnName("AmountInPennies");
-
-                    b.Property<int>("PoolId")
-                        .HasColumnType("int")
-                        .HasColumnName("IncomeAllocationEvent_PoolId");
-
-                    b.HasIndex("PoolId");
-
-                    b.HasDiscriminator().HasValue("income_allocation_event");
-                });
-
-            modelBuilder.Entity("Budgetty.Domain.BudgetaryEvents.IncomeEvent", b =>
-                {
-                    b.HasBaseType("Budgetty.Domain.BudgetaryEvents.BudgetaryEvent");
-
-                    b.Property<int>("AmountInPennies")
-                        .ValueGeneratedOnUpdateSometimes()
-                        .HasColumnType("int")
-                        .HasColumnName("AmountInPennies");
-
-                    b.Property<int?>("DebtPoolId")
-                        .HasColumnType("int");
-
-                    b.HasIndex("DebtPoolId");
-
-                    b.HasDiscriminator().HasValue("income_event");
-                });
-
-            modelBuilder.Entity("Budgetty.Domain.BudgetaryEvents.PoolTransferEvent", b =>
-                {
-                    b.HasBaseType("Budgetty.Domain.BudgetaryEvents.BudgetaryEvent");
-
-                    b.Property<int>("AmountInPennies")
-                        .ValueGeneratedOnUpdateSometimes()
-                        .HasColumnType("int")
-                        .HasColumnName("AmountInPennies");
-
-                    b.Property<int>("DestinationPoolId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("SourcePoolId")
-                        .HasColumnType("int");
-
-                    b.HasIndex("DestinationPoolId");
-
-                    b.HasIndex("SourcePoolId");
-
-                    b.HasDiscriminator().HasValue("pool_transfer_event");
-                });
-
             modelBuilder.Entity("Budgetty.Domain.BankAccountSnapShot", b =>
                 {
                     b.HasOne("Budgetty.Domain.BankAccount", "BankAccount")
@@ -496,15 +420,23 @@ namespace Budgetty.Persistance.Migrations
 
             modelBuilder.Entity("Budgetty.Domain.BudgetaryEvents.BudgetaryEvent", b =>
                 {
-                    b.HasOne("Budgetty.Domain.FinancialsSnapshot", null)
-                        .WithMany("BudgetaryEvents")
-                        .HasForeignKey("FinancialsSnapshotId");
+                    b.HasOne("Budgetty.Domain.BudgetaryPool", "DestinationPool")
+                        .WithMany("BudgetaryEventsAsDestination")
+                        .HasForeignKey("DestinationPoolId");
+
+                    b.HasOne("Budgetty.Domain.BudgetaryPool", "SourcePool")
+                        .WithMany("BudgetaryEventsAsSource")
+                        .HasForeignKey("SourcePoolId");
+
+                    b.Navigation("DestinationPool");
+
+                    b.Navigation("SourcePool");
                 });
 
             modelBuilder.Entity("Budgetty.Domain.BudgetaryPool", b =>
                 {
                     b.HasOne("Budgetty.Domain.BankAccount", "BankAccount")
-                        .WithMany()
+                        .WithMany("BudgetaryPools")
                         .HasForeignKey("BankAccountId");
 
                     b.Navigation("BankAccount");
@@ -576,61 +508,21 @@ namespace Budgetty.Persistance.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Budgetty.Domain.BudgetaryEvents.ExpenditureEvent", b =>
+            modelBuilder.Entity("Budgetty.Domain.BankAccount", b =>
                 {
-                    b.HasOne("Budgetty.Domain.BudgetaryPool", "Pool")
-                        .WithMany()
-                        .HasForeignKey("PoolId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Pool");
+                    b.Navigation("BudgetaryPools");
                 });
 
-            modelBuilder.Entity("Budgetty.Domain.BudgetaryEvents.IncomeAllocationEvent", b =>
+            modelBuilder.Entity("Budgetty.Domain.BudgetaryPool", b =>
                 {
-                    b.HasOne("Budgetty.Domain.BudgetaryPool", "Pool")
-                        .WithMany()
-                        .HasForeignKey("PoolId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.Navigation("BudgetaryEventsAsDestination");
 
-                    b.Navigation("Pool");
-                });
-
-            modelBuilder.Entity("Budgetty.Domain.BudgetaryEvents.IncomeEvent", b =>
-                {
-                    b.HasOne("Budgetty.Domain.BudgetaryPool", "DebtPool")
-                        .WithMany()
-                        .HasForeignKey("DebtPoolId");
-
-                    b.Navigation("DebtPool");
-                });
-
-            modelBuilder.Entity("Budgetty.Domain.BudgetaryEvents.PoolTransferEvent", b =>
-                {
-                    b.HasOne("Budgetty.Domain.BudgetaryPool", "DestinationPool")
-                        .WithMany()
-                        .HasForeignKey("DestinationPoolId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Budgetty.Domain.BudgetaryPool", "SourcePool")
-                        .WithMany()
-                        .HasForeignKey("SourcePoolId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("DestinationPool");
-
-                    b.Navigation("SourcePool");
+                    b.Navigation("BudgetaryEventsAsSource");
                 });
 
             modelBuilder.Entity("Budgetty.Domain.FinancialsSnapshot", b =>
                 {
                     b.Navigation("BankAccountSnapShots");
-
-                    b.Navigation("BudgetaryEvents");
 
                     b.Navigation("PoolSnapshots");
                 });
