@@ -53,8 +53,11 @@ namespace Budgetty.Mvc.Tests.Controllers
 
             // Then
             Assert.That(result, Is.Not.Null);
-            Assert.That(result!.ControllerName, Is.Null);
-            Assert.That(result.ActionName, Is.EqualTo(nameof(PoolsController.Index)));
+            Assert.Multiple(() =>
+            {
+                Assert.That(result!.ControllerName, Is.Null);
+                Assert.That(result.ActionName, Is.EqualTo(nameof(PoolsController.Index)));
+            });
 
             GetMock<IBudgetaryRepository>().Verify();
             GetMock<IBudgetaryRepository>().Verify();

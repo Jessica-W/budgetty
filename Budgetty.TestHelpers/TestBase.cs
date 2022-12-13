@@ -1,8 +1,11 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using System.Collections;
+using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using AutoFixture;
 using AutoFixture.AutoMoq;
 using AutoFixture.Dsl;
+using AutoFixture.Kernel;
 using Moq;
 using NUnit.Framework;
 
@@ -43,8 +46,10 @@ public abstract class TestBase<TClassUnderTest> : IMockCreationSynchronizer wher
     public void SynchronizeMock(Type type, Mock mock)
     {
         if (_injectedMocks.ContainsKey(type))
+        {
             throw new InvalidOperationException(
                 $"Duplicate mock for {type.Name} detected. Fixture can only have one mock per type.");
+        }
 
         _injectedMocks.Add(type, new Dictionary<string, Mock> { { DefaultMockName, mock } });
         InjectMock(type, mock);
@@ -144,6 +149,7 @@ public abstract class TestBase<TClassUnderTest> : IMockCreationSynchronizer wher
         autoMoqCustomization.ConfigureMembers = false;
 
         var fixture = new Fixture();
+        fixture.Customizations.Add(new SingularIEnumerableSpecimenBuilder());
         fixture.Customize(autoMoqCustomization);
 
         return fixture;
@@ -152,5 +158,33 @@ public abstract class TestBase<TClassUnderTest> : IMockCreationSynchronizer wher
     private void EnsureSetupWasCalled()
     {
         if (_fixture == null) throw new InvalidOperationException("Setup() must be called but wasn't");
+    }
+}
+
+internal class SingularIEnumerableSpecimenBuilder : ISpecimenBuilder
+{
+    public object Create(object request, ISpecimenContext context)
+    {
+        if (request is ParameterInfo pi && typeof(IEnumerable).IsAssignableFrom(pi.ParameterType))
+        {
+            var pt = pi.ParameterType;
+            var et = pt.GetGenericArguments().FirstOrDefault();
+            
+            if (et != null)
+            {
+                var obj = context.Resolve(et);
+                var lstTType = typeof(List<>).MakeGenericType(et);
+                var lstT = Activator.CreateInstance(lstTType, BindingFlags.Public);
+                var add = lstTType.GetMethod(nameof(List<int>.Add)); // int arbitrarily used just because you need to specify a type for nameof
+
+                if (add != null && lstT != null)
+                {
+                    add.Invoke(lstT, BindingFlags.Public, null, new[] { obj }, null);
+                    return lstT;
+                }
+            }
+        }
+
+        return new NoSpecimen();
     }
 }

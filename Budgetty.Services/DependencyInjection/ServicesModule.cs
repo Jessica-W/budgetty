@@ -14,6 +14,7 @@ namespace Budgetty.Services.DependencyInjection
             builder.RegisterType<FinancialStateService>().As<IFinancialStateService>();
             builder.RegisterType<DateTimeProvider>().As<IDateTimeProvider>().SingleInstance();
             builder.RegisterType<BudgetaryEventFactory>().As<IBudgetaryEventFactory>();
+            builder.RegisterType<UserInitializer>().As<IUserInitializer>();
         }
     }
 }

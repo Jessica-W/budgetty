@@ -2,9 +2,11 @@
 using Budgetty.Domain.BudgetaryEvents;
 using Budgetty.Domain.Exceptions;
 using Microsoft.EntityFrameworkCore;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Budgetty.Persistance.Repositories
 {
+    [ExcludeFromCodeCoverage] // Impossible to unit test
     internal class BudgetaryRepository : IBudgetaryRepository
     {
         private readonly BudgettyDbContext _budgettyDbContext;

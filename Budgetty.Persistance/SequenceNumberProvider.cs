@@ -1,8 +1,10 @@
-﻿using Budgetty.Domain;
+﻿using System.Diagnostics.CodeAnalysis;
+using Budgetty.Domain;
 using Microsoft.EntityFrameworkCore;
 
 namespace Budgetty.Persistance
 {
+    [ExcludeFromCodeCoverage] // Impossible to unit test
     internal class SequenceNumberProvider : ISequenceNumberProvider
     {
         private readonly IDbContextFactory<BudgettyDbContext> _budgettyDbContextFactory;
