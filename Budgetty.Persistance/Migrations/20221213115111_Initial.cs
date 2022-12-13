@@ -1,5 +1,4 @@
-﻿using System;
-using System.Diagnostics.CodeAnalysis;
+﻿using System.Diagnostics.CodeAnalysis;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 
@@ -90,7 +89,8 @@ namespace Budgetty.Persistance.Migrations
                 name: "FinancialsSnapshots",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     Date = table.Column<DateOnly>(type: "date", nullable: false),
                     UnallocatedIncomeInPennies = table.Column<int>(type: "int", nullable: false),
                     UserId = table.Column<string>(type: "longtext", nullable: true)
@@ -293,7 +293,7 @@ namespace Budgetty.Persistance.Migrations
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     BankAccountId = table.Column<int>(type: "int", nullable: false),
                     BalanceInPennies = table.Column<int>(type: "int", nullable: false),
-                    FinancialsSnapshotId = table.Column<Guid>(type: "char(36)", nullable: true, collation: "ascii_general_ci")
+                    FinancialsSnapshotId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -353,7 +353,7 @@ namespace Budgetty.Persistance.Migrations
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     PoolId = table.Column<int>(type: "int", nullable: false),
                     BalanceInPennies = table.Column<int>(type: "int", nullable: false),
-                    FinancialsSnapshotId = table.Column<Guid>(type: "char(36)", nullable: true, collation: "ascii_general_ci")
+                    FinancialsSnapshotId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {

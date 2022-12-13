@@ -23,7 +23,7 @@ namespace Budgetty.Mvc.Tests.Controllers
                 .Setup(x => x.GetUserId(It.IsAny<ClaimsPrincipal>()))
                 .Returns(UserId);
         }
-
+        
         [Test]
         public void
             GivenPoolIdAndCurrentUser_WhenDeleteIsCalled_ThenBudgetaryRepositoryIsUsedToDeleteThePoolAndRedirectToIndexIsReturned()

@@ -1,5 +1,4 @@
 ﻿using System.Collections;
-using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using AutoFixture;
@@ -32,7 +31,7 @@ public abstract class TestBase<TClassUnderTest> : IMockCreationSynchronizer wher
     {
         TestDataFixture = CreateNewDataFixture();
     }
-
+    
     protected TClassUnderTest ClassUnderTest
     {
         get

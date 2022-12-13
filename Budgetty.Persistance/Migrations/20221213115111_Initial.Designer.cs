@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Budgetty.Persistance.Migrations
 {
     [DbContext(typeof(BudgettyDbContext))]
-    [Migration("20221211184950_Initial")]
+    [Migration("20221213115111_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -51,8 +51,8 @@ namespace Budgetty.Persistance.Migrations
                     b.Property<int>("BankAccountId")
                         .HasColumnType("int");
 
-                    b.Property<Guid?>("FinancialsSnapshotId")
-                        .HasColumnType("char(36)");
+                    b.Property<int?>("FinancialsSnapshotId")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -131,9 +131,9 @@ namespace Budgetty.Persistance.Migrations
 
             modelBuilder.Entity("Budgetty.Domain.FinancialsSnapshot", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("char(36)");
+                        .HasColumnType("int");
 
                     b.Property<DateOnly>("Date")
                         .HasColumnType("date");
@@ -158,8 +158,8 @@ namespace Budgetty.Persistance.Migrations
                     b.Property<int>("BalanceInPennies")
                         .HasColumnType("int");
 
-                    b.Property<Guid?>("FinancialsSnapshotId")
-                        .HasColumnType("char(36)");
+                    b.Property<int?>("FinancialsSnapshotId")
+                        .HasColumnType("int");
 
                     b.Property<int>("PoolId")
                         .HasColumnType("int");

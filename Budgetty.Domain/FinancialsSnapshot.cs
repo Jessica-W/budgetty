@@ -5,7 +5,7 @@ namespace Budgetty.Domain
     [ExcludeFromCodeCoverage]
     public class FinancialsSnapshot
     {
-        public Guid Id { get; set; }
+        public int Id { get; set; }
         public DateOnly Date { get; set; }
         public int UnallocatedIncomeInPennies { get; set; }
         public List<PoolSnapshot> PoolSnapshots { get; set; } = new();

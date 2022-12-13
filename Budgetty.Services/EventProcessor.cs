@@ -9,10 +9,14 @@ public class EventProcessor : IEventProcessor
     public FinancialState ProcessEvents(List<BudgetaryEvent> allEvents, FinancialsSnapshot? financialsSnapshot,
         List<BudgetaryPool> pools, Action<BudgetaryEvent, FinancialState>? callback = null)
     {
-        var bankAccounts = pools.Where(x => x.BankAccount != null).Select(x => x.BankAccount!).ToList();
+        var bankAccounts = pools.Where(x => x.BankAccount != null)
+            .Select(x => x.BankAccount!).ToList();
         var financialState = new FinancialState(pools, bankAccounts, financialsSnapshot);
 
-        var orderedEvents = allEvents.OrderBy(x => x.SequenceNumber).ToList();
+        var orderedEvents = allEvents
+            .OrderBy(x => x.Date)
+            .ThenBy(x => x.SequenceNumber)
+            .ToList();
 
         foreach (var budgetaryEvent in orderedEvents)
         {
@@ -54,6 +58,11 @@ public class EventProcessor : IEventProcessor
 
         if (incomeEvent.SourcePool != null)
         {
+            if (incomeEvent.SourcePool.Type != PoolType.Debt)
+            {
+                throw new ArgumentException("Source pool must be a debt pool", nameof(incomeEvent));
+            }
+
             financialState.AdjustPoolBalance(incomeEvent.SourcePool, incomeEvent.AmountInPennies);
         }
     }
@@ -121,7 +130,7 @@ public class EventProcessor : IEventProcessor
 
         if (pool.Type == PoolType.Debt)
         {
-            throw new InvalidOperationException($"Unable to expend from \"{pool.Name}\". Expenditures from a debt pools are disallowed.");
+            throw new ArgumentException($"Unable to expend from \"{pool.Name}\". Expenditures from a debt pools are disallowed.", nameof(expenditureEvent));
         }
 
         if (financialState.GetPoolBalance(pool) < expenditureEvent.AmountInPennies)

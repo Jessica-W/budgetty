@@ -57,7 +57,7 @@
                 : 0;
         }
 
-        public List<(BudgetaryPool Pool, int BalanceInPennies)> GetPoolBalancesInPennies()
+        public List<(BudgetaryPool Pool, int BalanceInPennies)> GetPoolBalances()
         {
             return _poolBalances.Select(x => (x.Key, x.Value)).ToList();
         }
@@ -69,7 +69,7 @@
                 : 0;
         }
         
-        public List<(BankAccount BankAccount, int BalanceInPennies)> GetBankAccountBalancesInPennies()
+        public List<(BankAccount BankAccount, int BalanceInPennies)> GetBankAccountBalances()
         {
             return _bankAccountBalances.Select(x => (x.Key, x.Value)).ToList();
         }

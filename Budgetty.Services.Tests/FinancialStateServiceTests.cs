@@ -9,7 +9,6 @@ using Moq;
 namespace Budgetty.Services.Tests
 {
     [TestFixture]
-    [ExcludeFromCodeCoverage]
     public class FinancialStateServiceTests : TestBase<FinancialStateService>
     {
         protected override void SetUp()
