@@ -88,7 +88,7 @@ public class EventProcessor : IEventProcessor
         {
             if (financialState.GetPoolBalance(pool) - incomeAllocationEvent.AmountInPennies < 0)
             {
-                throw new InvalidOperationException("Income allocation greater than debt amount");
+                throw new InvalidOperationException("Income allocation is greater than debt amount");
             }
 
             financialState.AdjustPoolBalance(pool, -incomeAllocationEvent.AmountInPennies);
@@ -110,13 +110,32 @@ public class EventProcessor : IEventProcessor
             throw new ArgumentException("Source and destination pools must be provided", nameof(poolTransferEvent));
         }
 
+        if (srcPool == dstPool)
+        {
+            throw new ArgumentException("Destination pool cannot be the same as the source pool",
+                nameof(poolTransferEvent));
+        }
+
         if (financialState.GetPoolBalance(srcPool) < amountInPennies)
         {
             throw new InvalidOperationException($"Amount in source pool \"{srcPool.Name}\" is less than the transfer amount of £{amountInPennies/100m:0.00}");
         }
 
         financialState.AdjustPoolBalance(srcPool, -amountInPennies);
-        financialState.AdjustPoolBalance(dstPool, amountInPennies);
+
+        if (dstPool.Type == PoolType.Debt)
+        {
+            if (financialState.GetPoolBalance(dstPool) < amountInPennies)
+            {
+                throw new InvalidOperationException("Pool transfer amount is greater than debt amount");
+            }
+
+            financialState.AdjustPoolBalance(dstPool, -amountInPennies);
+        }
+        else
+        {
+            financialState.AdjustPoolBalance(dstPool, amountInPennies);
+        }
     }
 
     private static void ProcessExpenditureEvent(BudgetaryEvent expenditureEvent, FinancialState financialState)

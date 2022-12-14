@@ -43,10 +43,17 @@
             }
             
             _poolBalances[pool] += incomeAmountInPennies;
-            
-            if (pool.BankAccount != null)
+
+            var bankAccount = pool.BankAccount;
+
+            if (bankAccount != null)
             {
-                _bankAccountBalances[pool.BankAccount] += incomeAmountInPennies;
+                if (!_bankAccountBalances.ContainsKey(bankAccount))
+                {
+                    _bankAccountBalances.Add(bankAccount, 0);
+                }
+
+                _bankAccountBalances[bankAccount] += incomeAmountInPennies;
             }
         }
 
