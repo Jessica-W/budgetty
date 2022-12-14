@@ -9,44 +9,67 @@ public class EventProcessor : IEventProcessor
     public FinancialState ProcessEvents(List<BudgetaryEvent> allEvents, FinancialsSnapshot? financialsSnapshot,
         List<BudgetaryPool> pools, Action<BudgetaryEvent, FinancialState>? callback = null)
     {
-        var bankAccounts = pools.Where(x => x.BankAccount != null).Select(x => x.BankAccount!).ToList();
+        var bankAccounts = pools.Where(x => x.BankAccount != null)
+            .Select(x => x.BankAccount!).ToList();
         var financialState = new FinancialState(pools, bankAccounts, financialsSnapshot);
 
-        var orderedEvents = allEvents.OrderBy(x => x.SequenceNumber).ToList();
+        var orderedEvents = allEvents
+            .OrderBy(x => x.Date)
+            .ThenBy(x => x.SequenceNumber)
+            .ToList();
 
-        foreach (dynamic budgetaryEvent in orderedEvents)
+        foreach (var budgetaryEvent in orderedEvents)
         {
             ProcessEvent(budgetaryEvent, financialState);
-
-            if (callback != null)
-            {
-                callback(budgetaryEvent, financialState);
-            }
+            callback?.Invoke(budgetaryEvent, financialState);
         }
 
         return financialState;
     }
 
-    // ReSharper disable once UnusedParameter.Local
-    // ReSharper disable once EntityNameCapturedOnly.Local
-    private void ProcessEvent(BudgetaryEvent budgetaryEvent, FinancialState _)
+    private static void ProcessEvent(BudgetaryEvent budgetaryEvent, FinancialState financialState)
     {
-        throw new ArgumentException("Unexpected budgetary event type", nameof(budgetaryEvent));
-    }
-
-    private void ProcessEvent(IncomeEvent incomeEvent, FinancialState financialState)
-    {
-        financialState.UnallocatedIncomeInPennies += incomeEvent.AmountInPennies;
-
-        if (incomeEvent.DebtPool != null)
+        switch (budgetaryEvent.EventType)
         {
-            financialState.AdjustPoolBalance(incomeEvent.DebtPool, incomeEvent.AmountInPennies);
+            case BudgetaryEvent.BudgetaryEventType.Expenditure:
+                ProcessExpenditureEvent(budgetaryEvent, financialState);
+                break;
+
+            case BudgetaryEvent.BudgetaryEventType.IncomeAllocation:
+                ProcessIncomeAllocationEvent(budgetaryEvent, financialState);
+                break;
+
+            case BudgetaryEvent.BudgetaryEventType.Income:
+                ProcessIncomeEvent(budgetaryEvent, financialState);
+                break;
+
+            case BudgetaryEvent.BudgetaryEventType.PoolTransfer:
+                ProcessPoolTransferEvent(budgetaryEvent, financialState);
+                break;
+
+            default:
+                throw new ArgumentException($"Unexpected event type ({budgetaryEvent.EventType})", nameof(budgetaryEvent));
         }
     }
 
-    private void ProcessEvent(IncomeAllocationEvent incomeAllocationEvent, FinancialState financialState)
+    private static void ProcessIncomeEvent(BudgetaryEvent incomeEvent, FinancialState financialState)
     {
-        var pool = incomeAllocationEvent.Pool;
+        financialState.UnallocatedIncomeInPennies += incomeEvent.AmountInPennies;
+
+        if (incomeEvent.SourcePool != null)
+        {
+            if (incomeEvent.SourcePool.Type != PoolType.Debt)
+            {
+                throw new ArgumentException("Source pool must be a debt pool", nameof(incomeEvent));
+            }
+
+            financialState.AdjustPoolBalance(incomeEvent.SourcePool, incomeEvent.AmountInPennies);
+        }
+    }
+
+    private static void ProcessIncomeAllocationEvent(BudgetaryEvent incomeAllocationEvent, FinancialState financialState)
+    {
+        var pool = incomeAllocationEvent.DestinationPool;
 
         financialState.UnallocatedIncomeInPennies -= incomeAllocationEvent.AmountInPennies;
 
@@ -55,11 +78,17 @@ public class EventProcessor : IEventProcessor
             throw new InvalidOperationException("Income allocation greater than unallocated income");
         }
 
+        if (pool == null)
+        {
+            throw new ArgumentException("Income allocation event has no destination pool",
+                nameof(incomeAllocationEvent));
+        }
+
         if (pool.Type == PoolType.Debt)
         {
             if (financialState.GetPoolBalance(pool) - incomeAllocationEvent.AmountInPennies < 0)
             {
-                throw new InvalidOperationException("Income allocation greater than debt amount");
+                throw new InvalidOperationException("Income allocation is greater than debt amount");
             }
 
             financialState.AdjustPoolBalance(pool, -incomeAllocationEvent.AmountInPennies);
@@ -70,11 +99,22 @@ public class EventProcessor : IEventProcessor
         }
     }
 
-    private void ProcessEvent(PoolTransferEvent poolTransferEvent, FinancialState financialState)
+    private static void ProcessPoolTransferEvent(BudgetaryEvent poolTransferEvent, FinancialState financialState)
     {
         var srcPool = poolTransferEvent.SourcePool;
         var dstPool = poolTransferEvent.DestinationPool;
         var amountInPennies = poolTransferEvent.AmountInPennies;
+
+        if (srcPool == null || dstPool == null)
+        {
+            throw new ArgumentException("Source and destination pools must be provided", nameof(poolTransferEvent));
+        }
+
+        if (srcPool == dstPool)
+        {
+            throw new ArgumentException("Destination pool cannot be the same as the source pool",
+                nameof(poolTransferEvent));
+        }
 
         if (financialState.GetPoolBalance(srcPool) < amountInPennies)
         {
@@ -82,21 +122,41 @@ public class EventProcessor : IEventProcessor
         }
 
         financialState.AdjustPoolBalance(srcPool, -amountInPennies);
-        financialState.AdjustPoolBalance(dstPool, amountInPennies);
+
+        if (dstPool.Type == PoolType.Debt)
+        {
+            if (financialState.GetPoolBalance(dstPool) < amountInPennies)
+            {
+                throw new InvalidOperationException("Pool transfer amount is greater than debt amount");
+            }
+
+            financialState.AdjustPoolBalance(dstPool, -amountInPennies);
+        }
+        else
+        {
+            financialState.AdjustPoolBalance(dstPool, amountInPennies);
+        }
     }
 
-    private void ProcessEvent(ExpenditureEvent expenditureEvent, FinancialState financialState)
+    private static void ProcessExpenditureEvent(BudgetaryEvent expenditureEvent, FinancialState financialState)
     {
-        if (expenditureEvent.Pool.Type == PoolType.Debt)
+        var pool = expenditureEvent.SourcePool;
+
+        if (pool == null)
         {
-            throw new InvalidOperationException($"Unable to expend from \"{expenditureEvent.Pool.Name}\". Expenditures from a debt pools are disallowed.");
+            throw new ArgumentException("Source pool cannot be null", nameof(expenditureEvent));
         }
 
-        if (financialState.GetPoolBalance(expenditureEvent.Pool) < expenditureEvent.AmountInPennies)
+        if (pool.Type == PoolType.Debt)
         {
-            throw new InvalidOperationException($"Expenditure of £{expenditureEvent.AmountInPennies/100m:0.00} greater than balance in pool \"{expenditureEvent.Pool.Name}\"");
+            throw new ArgumentException($"Unable to expend from \"{pool.Name}\". Expenditures from a debt pools are disallowed.", nameof(expenditureEvent));
         }
 
-        financialState.AdjustPoolBalance(expenditureEvent.Pool, -expenditureEvent.AmountInPennies);
+        if (financialState.GetPoolBalance(pool) < expenditureEvent.AmountInPennies)
+        {
+            throw new InvalidOperationException($"Expenditure of £{expenditureEvent.AmountInPennies/100m:0.00} greater than balance in pool \"{pool.Name}\"");
+        }
+
+        financialState.AdjustPoolBalance(pool, -expenditureEvent.AmountInPennies);
     }
 }

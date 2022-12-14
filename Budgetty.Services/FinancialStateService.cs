@@ -24,7 +24,7 @@ namespace Budgetty.Services
             var financialsSnapshot = await _financialsSnapshotManager.GetSnapshotAsync(userId);
             var now = _dateTimeProvider.GetDateNow();
             var allEvents = _budgetaryRepository.GetBudgetaryEventsForUser(userId, financialsSnapshot?.Date, now).ToList();
-            var pools = _budgetaryRepository.GetBudgetaryPoolsForUser(userId, includeBankAccounts: true).ToList();
+            var pools = _budgetaryRepository.GetBudgetaryPoolsForUser(userId, includeBankAccounts: true, includeBudgetaryEvents: false).ToList();
             var financialState = _eventProcessor.ProcessEvents(allEvents, financialsSnapshot, pools);
 
             return financialState;

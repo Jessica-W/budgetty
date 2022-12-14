@@ -8,8 +8,9 @@ public interface IBudgetaryRepository
     DateOnly? GetDateOfEarliestBudgetaryEventForUser(string userId);
     DateOnly? GetDateOfLatestBudgetaryEventForUser(string userId);
     IEnumerable<BudgetaryEvent> GetBudgetaryEventsForUser(string userId, DateOnly? startDate = null, DateOnly? endDate = null);
-    IEnumerable<BudgetaryPool> GetBudgetaryPoolsForUser(string userId, bool includeBankAccounts);
+    IEnumerable<BudgetaryPool> GetBudgetaryPoolsForUser(string userId, bool includeBankAccounts, bool includeBudgetaryEvents);
     void AddBudgetaryPool(BudgetaryPool pool);
     void AddBudgetaryEvent(BudgetaryEvent budgetaryEvent);
+    void DeletePool(string userId, int poolId);
     void SaveChanges();
 }

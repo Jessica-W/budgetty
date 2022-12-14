@@ -1,10 +1,12 @@
-﻿using Budgetty.Domain;
+﻿using System.Diagnostics.CodeAnalysis;
+using Budgetty.Domain;
 using Budgetty.Domain.BudgetaryEvents;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace Budgetty.Persistance
 {
+    [ExcludeFromCodeCoverage]
     public class BudgettyDbContext : IdentityDbContext
     {
         public DbSet<BudgetaryEvent> BudgetaryEvents { get; set; } = null!;
@@ -23,51 +25,16 @@ namespace Budgetty.Persistance
             base.OnModelCreating(modelBuilder);
 
             modelBuilder.Entity<BudgetaryEvent>()
-                .HasDiscriminator<string>("EventType")
-                .HasValue<ExpenditureEvent>("expenditure_event")
-                .HasValue<IncomeAllocationEvent>("income_allocation_event")
-                .HasValue<IncomeEvent>("income_event")
-                .HasValue<PoolTransferEvent>("pool_transfer_event");
-            
-            modelBuilder.Entity<IncomeEvent>()
-                .HasBaseType<BudgetaryEvent>();
+                .HasOne(x => x.DestinationPool)
+                .WithMany(x => x.BudgetaryEventsAsDestination);
 
-            modelBuilder.Entity<IncomeAllocationEvent>()
-                .HasBaseType<BudgetaryEvent>();
+            modelBuilder.Entity<BudgetaryEvent>()
+                .HasOne(x => x.SourcePool)
+                .WithMany(x => x.BudgetaryEventsAsSource);
 
-            modelBuilder.Entity<ExpenditureEvent>()
-                .HasBaseType<BudgetaryEvent>();
-
-            modelBuilder.Entity<PoolTransferEvent>()
-                .HasBaseType<BudgetaryEvent>();
-
-            modelBuilder.Entity<ExpenditureEvent>()
-                .HasIndex(x => new { x.UserId, x.SequenceNumber })
-                .IsUnique();
-
-            modelBuilder.Entity<ExpenditureEvent>()
-                .Property(x => x.Description);
-
-            modelBuilder.Entity<ExpenditureEvent>()
-                .Property(x => x.AmountInPennies)
-                .HasColumnName("AmountInPennies");
-
-            modelBuilder.Entity<IncomeAllocationEvent>()
-                .Property(x => x.AmountInPennies)
-                .HasColumnName("AmountInPennies");
-
-            modelBuilder.Entity<IncomeEvent>()
-                .Property(x => x.AmountInPennies)
-                .HasColumnName("AmountInPennies");
-
-            modelBuilder.Entity<PoolTransferEvent>()
-                .Property(x => x.AmountInPennies)
-                .HasColumnName("AmountInPennies");
-
-            modelBuilder.Entity<ExpenditureEvent>()
-                .HasOne(x => x.Pool)
-                .WithMany()
-                .IsRequired();
+            modelBuilder.Entity<BudgetaryPool>()
+                .HasOne(x => x.BankAccount)
+                .WithMany(x => x.BudgetaryPools);
         }
     }
 }

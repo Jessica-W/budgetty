@@ -43,10 +43,17 @@
             }
             
             _poolBalances[pool] += incomeAmountInPennies;
-            
-            if (pool.BankAccount != null)
+
+            var bankAccount = pool.BankAccount;
+
+            if (bankAccount != null)
             {
-                _bankAccountBalances[pool.BankAccount] += incomeAmountInPennies;
+                if (!_bankAccountBalances.ContainsKey(bankAccount))
+                {
+                    _bankAccountBalances.Add(bankAccount, 0);
+                }
+
+                _bankAccountBalances[bankAccount] += incomeAmountInPennies;
             }
         }
 
@@ -57,7 +64,7 @@
                 : 0;
         }
 
-        public List<(BudgetaryPool Pool, int BalanceInPennies)> GetPoolBalancesInPennies()
+        public List<(BudgetaryPool Pool, int BalanceInPennies)> GetPoolBalances()
         {
             return _poolBalances.Select(x => (x.Key, x.Value)).ToList();
         }
@@ -69,7 +76,7 @@
                 : 0;
         }
         
-        public List<(BankAccount BankAccount, int BalanceInPennies)> GetBankAccountBalancesInPennies()
+        public List<(BankAccount BankAccount, int BalanceInPennies)> GetBankAccountBalances()
         {
             return _bankAccountBalances.Select(x => (x.Key, x.Value)).ToList();
         }

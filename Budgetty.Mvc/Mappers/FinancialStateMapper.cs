@@ -15,13 +15,13 @@ namespace Budgetty.Mvc.Mappers
 
         public SummaryViewModel MapToSummaryViewModel(FinancialState financialState)
         {
-            var poolBalances = financialState.GetPoolBalancesInPennies();
+            var poolBalances = financialState.GetPoolBalances();
 
             return new SummaryViewModel
             {
                 CurrentDate = DateOnly.FromDateTime(_dateTimeProvider.GetUtcNow()),
                 UnallocatedIncome = (decimal)financialState.UnallocatedIncomeInPennies / 100,
-                BankAccounts = financialState.GetBankAccountBalancesInPennies()
+                BankAccounts = financialState.GetBankAccountBalances()
                     .Select(x => new BankAccountViewModel
                     {
                         AccountBalance = (decimal)x.BalanceInPennies / 100,

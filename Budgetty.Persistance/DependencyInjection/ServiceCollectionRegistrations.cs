@@ -1,9 +1,11 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Budgetty.Persistance.DependencyInjection
 {
+    [ExcludeFromCodeCoverage]
     public static class ServiceCollectionRegistrations
     {
         public static void RegisterDbContext(IServiceCollection services, string connectionString)
