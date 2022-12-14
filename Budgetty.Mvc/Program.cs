@@ -8,6 +8,7 @@ using Budgetty.Services.DependencyInjection;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.ApplicationInsights.AspNetCore.Extensions;
 using System.Diagnostics.CodeAnalysis;
+using Budgetty.Mvc.Filters;
 
 namespace Budgetty.Mvc
 {
@@ -33,7 +34,10 @@ namespace Budgetty.Mvc
 
             builder.Services.AddDateOnlyTimeOnlyStringConverters();
 
-            builder.Services.AddControllersWithViews();
+            builder.Services.AddControllersWithViews(options =>
+            {
+                options.Filters.Add<LogCsrfFailureFilter>();
+            });
 
             AddGoogleOAuth(builder.Configuration, builder.Services);
 
@@ -45,7 +49,7 @@ namespace Budgetty.Mvc
                 containerBuilder.RegisterModule<PersistenceModule>();
                 containerBuilder.RegisterModule<MappersModule>();
             });
-
+            
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.

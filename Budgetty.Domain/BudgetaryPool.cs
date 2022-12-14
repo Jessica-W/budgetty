@@ -21,7 +21,7 @@ namespace Budgetty.Domain
                 {
                     _bankAccount = value;
                 }
-                else
+                else if (value != null)
                 {
                     throw new InvalidOperationException("Cannot assign bank account to debt pool");
                 }

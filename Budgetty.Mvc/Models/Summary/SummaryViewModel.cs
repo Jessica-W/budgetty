@@ -10,6 +10,7 @@
 
     public class BankAccountViewModel
     {
+        public int Id { get; set; }
         public string AccountName { get; set; } = "";
         public decimal AccountBalance { get; set; }
         public List<(string PoolName, decimal Balance)> IncomePoolBalances { get; set; } = new();

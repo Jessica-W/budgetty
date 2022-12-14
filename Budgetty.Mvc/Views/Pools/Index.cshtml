@@ -1,4 +1,5 @@
-﻿@model Budgetty.Mvc.Models.Pools.PoolsViewModel
+﻿@using Budgetty.Domain
+@model Budgetty.Mvc.Models.Pools.PoolsViewModel
 
 <h3>Pools</h3>
 
@@ -30,3 +31,52 @@
         }
     </tbody>
 </table>
+
+<form method="post" asp-controller="Pools" asp-action="CreatePool">
+    <div class="row">
+        <div class="col">
+            <input type="text" class="form-control" name="name" oninput="nameChanged(event)" placeholder="New pool's name'" />
+        </div>
+        <div class="col">
+            <select name="poolType" class="form-select" onchange="poolTypeChanged(event)">
+                <option value="@(PoolType.Income)">Income</option>
+                <option value="@(PoolType.Debt)">Debt</option>
+            </select>
+        </div>
+        <div class="col">
+            <select name="bankAccountId" class="form-select">
+                @foreach (var bankAccount in Model.AvailableBankAccounts)
+                {
+                    <option value="@bankAccount.Id">@bankAccount.Name</option>
+                }
+            </select>
+        </div>
+        <div class="col">
+            <button disabled="disabled" id="createPool" class="btn btn-primary">Create New Pool</button>
+        </div>
+    </div>
+</form>
+
+<script>
+    function poolTypeChanged(event) {
+        let poolTypeSelect = event.target;
+        let value = poolTypeSelect.value;
+        let bankAccountSelect = document.getElementsByName("bankAccountId")[0];
+        let isDebtPool = (value == "@PoolType.Debt")
+        
+        if (isDebtPool) {
+            bankAccountSelect.selectedIndex = -1;
+        } else if (bankAccountSelect.selectedIndex == -1) {
+            bankAccountSelect.selectedIndex = 0;
+        }
+        
+        bankAccountSelect.disabled = isDebtPool;
+    };
+
+    function nameChanged(event) {
+        let nameInput = event.target;
+        let name = nameInput.value;
+
+        document.getElementById("createPool").disabled = (name.length == 0);
+    }
+</script>
