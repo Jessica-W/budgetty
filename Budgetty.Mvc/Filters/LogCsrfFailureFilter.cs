@@ -7,7 +7,7 @@ namespace Budgetty.Mvc.Filters
     {
         public Task OnResultExecutionAsync(ResultExecutingContext context, ResultExecutionDelegate? next)
         {
-            if (context.Result is AntiforgeryValidationFailedResult reult)
+            if (context.Result is AntiforgeryValidationFailedResult)
             {
                 var logger = context.HttpContext.RequestServices.GetService<ILogger<LogCsrfFailureFilter>>();
 
