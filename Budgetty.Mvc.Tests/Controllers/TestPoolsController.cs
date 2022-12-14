@@ -71,14 +71,14 @@ namespace Budgetty.Mvc.Tests.Controllers
             var expectedPools = new List<BudgetaryPool>
             {
                 BuildObject<BudgetaryPool>()
-                    .Without(x => x.BankAccount)
+                    .With(x => x.Type, PoolType.Income)
                     .With(x => x.BudgetaryEventsAsDestination, new List<BudgetaryEvent> { new() })
                     .With(x => x.BudgetaryEventsAsSource, new List<BudgetaryEvent>())
                     .Create(),
             };
 
             GetMock<IBudgetaryRepository>()
-                .Setup(x => x.GetBudgetaryPoolsForUser(UserId, false, true))
+                .Setup(x => x.GetBudgetaryPoolsForUser(UserId, true, true))
                 .Returns(expectedPools)
                 .Verifiable();
 
@@ -93,7 +93,6 @@ namespace Budgetty.Mvc.Tests.Controllers
             Assert.Multiple(() =>
             {
                 Assert.That(viewModel.Pools[0].Id, Is.EqualTo(expectedPools[0].Id));
-                Assert.That(viewModel.Pools[0].Name, Is.EqualTo(expectedPools[0].Name));
                 Assert.That(viewModel.Pools[0].Deletable, Is.False);
             });
         }
@@ -106,14 +105,14 @@ namespace Budgetty.Mvc.Tests.Controllers
             var expectedPools = new List<BudgetaryPool>
             {
                 BuildObject<BudgetaryPool>()
-                    .Without(x => x.BankAccount)
+                    .With(x => x.Type, PoolType.Income)
                     .With(x => x.BudgetaryEventsAsDestination, new List<BudgetaryEvent>())
                     .With(x => x.BudgetaryEventsAsSource, new List<BudgetaryEvent> { new() })
                     .Create(),
             };
 
             GetMock<IBudgetaryRepository>()
-                .Setup(x => x.GetBudgetaryPoolsForUser(UserId, false, true))
+                .Setup(x => x.GetBudgetaryPoolsForUser(UserId, true, true))
                 .Returns(expectedPools)
                 .Verifiable();
 
@@ -128,7 +127,6 @@ namespace Budgetty.Mvc.Tests.Controllers
             Assert.Multiple(() =>
             {
                 Assert.That(viewModel.Pools[0].Id, Is.EqualTo(expectedPools[0].Id));
-                Assert.That(viewModel.Pools[0].Name, Is.EqualTo(expectedPools[0].Name));
                 Assert.That(viewModel.Pools[0].Deletable, Is.False);
             });
         }
@@ -141,14 +139,48 @@ namespace Budgetty.Mvc.Tests.Controllers
             var expectedPools = new List<BudgetaryPool>
             {
                 BuildObject<BudgetaryPool>()
-                    .Without(x => x.BankAccount)
+                    .With(x => x.Type, PoolType.Income)
                     .With(x => x.BudgetaryEventsAsDestination, new List<BudgetaryEvent>())
                     .With(x => x.BudgetaryEventsAsSource, new List<BudgetaryEvent>())
                     .Create(),
             };
 
             GetMock<IBudgetaryRepository>()
-                .Setup(x => x.GetBudgetaryPoolsForUser(UserId, false, true))
+                .Setup(x => x.GetBudgetaryPoolsForUser(UserId, true, true))
+                .Returns(expectedPools)
+                .Verifiable();
+
+            // When
+            var result = ClassUnderTest.Index() as ViewResult;
+
+            // Then
+            Assert.That(result, Is.Not.Null);
+            var viewModel = result!.Model as PoolsViewModel;
+            Assert.That(viewModel, Is.Not.Null);
+            Assert.That(viewModel!.Pools, Has.Count.EqualTo(1));
+            Assert.Multiple(() =>
+            {
+                Assert.That(viewModel.Pools[0].Id, Is.EqualTo(expectedPools[0].Id));
+                Assert.That(viewModel.Pools[0].Deletable, Is.True);
+            });
+        }
+
+        [Test]
+        public void
+            GivenCurrentUserHasAnIncomePool_WhenIndexIsCalled_ThenViewResultIsReturnedWithNameAndBankAccountName()
+        {
+            // Given
+            var expectedPools = new List<BudgetaryPool>
+            {
+                BuildObject<BudgetaryPool>()
+                    .With(x => x.Type, PoolType.Income)
+                    .With(x => x.BudgetaryEventsAsDestination, new List<BudgetaryEvent>())
+                    .With(x => x.BudgetaryEventsAsSource, new List<BudgetaryEvent>())
+                    .Create(),
+            };
+
+            GetMock<IBudgetaryRepository>()
+                .Setup(x => x.GetBudgetaryPoolsForUser(UserId, true, true))
                 .Returns(expectedPools)
                 .Verifiable();
 
@@ -164,6 +196,44 @@ namespace Budgetty.Mvc.Tests.Controllers
             {
                 Assert.That(viewModel.Pools[0].Id, Is.EqualTo(expectedPools[0].Id));
                 Assert.That(viewModel.Pools[0].Name, Is.EqualTo(expectedPools[0].Name));
+                Assert.That(viewModel.Pools[0].BankAccountName, Is.EqualTo(expectedPools[0].BankAccount!.Name));
+                Assert.That(viewModel.Pools[0].Deletable, Is.True);
+            });
+        }
+
+        [Test]
+        public void
+            GivenCurrentUserHasADebtPool_WhenIndexIsCalled_ThenViewResultIsReturnedWithNameAndNotApplicableAsBankAccountName()
+        {
+            // Given
+            var expectedPools = new List<BudgetaryPool>
+            {
+                BuildObject<BudgetaryPool>()
+                    .With(x => x.Type, PoolType.Debt)
+                    .Without(x => x.BankAccount)
+                    .With(x => x.BudgetaryEventsAsDestination, new List<BudgetaryEvent>())
+                    .With(x => x.BudgetaryEventsAsSource, new List<BudgetaryEvent>())
+                    .Create(),
+            };
+
+            GetMock<IBudgetaryRepository>()
+                .Setup(x => x.GetBudgetaryPoolsForUser(UserId, true, true))
+                .Returns(expectedPools)
+                .Verifiable();
+
+            // When
+            var result = ClassUnderTest.Index() as ViewResult;
+
+            // Then
+            Assert.That(result, Is.Not.Null);
+            var viewModel = result!.Model as PoolsViewModel;
+            Assert.That(viewModel, Is.Not.Null);
+            Assert.That(viewModel!.Pools, Has.Count.EqualTo(1));
+            Assert.Multiple(() =>
+            {
+                Assert.That(viewModel.Pools[0].Id, Is.EqualTo(expectedPools[0].Id));
+                Assert.That(viewModel.Pools[0].Name, Is.EqualTo(expectedPools[0].Name));
+                Assert.That(viewModel.Pools[0].BankAccountName, Is.EqualTo("N/A"));
                 Assert.That(viewModel.Pools[0].Deletable, Is.True);
             });
         }

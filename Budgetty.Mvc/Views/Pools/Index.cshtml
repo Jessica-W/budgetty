@@ -6,6 +6,7 @@
     <thead>
         <tr>
             <th>Name</th>
+            <th>Connected Bank Account</th>
             <th class="fit">Actions</th>
         </tr>
     </thead>
@@ -14,16 +15,14 @@
         {
             <tr>
                 <td>@pool.Name</td>
+                <td>@pool.BankAccountName</td>
                 <td class="text-center">
                     @{
                         <form method="post" asp-controller="Pools" asp-action="Delete">
                             <input type="hidden" name="poolId" value="@pool.Id" />
-                            @if (pool.Deletable)
-                            {
-                                <button type="submit" class="btn btn-sm">
-                                    <span class="fas fa-remove fa-2x text-danger"></span>
-                                </button>
-                            }
+                            <button type="submit" class="btn btn-sm" disabled="@(!pool.Deletable)">
+                                <span class="fas fa-remove fa-2x @(pool.Deletable ? "text-danger" : "")"></span>
+                            </button>
                         </form>
                     }
                 </td>
