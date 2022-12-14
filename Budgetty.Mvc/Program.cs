@@ -33,7 +33,10 @@ namespace Budgetty.Mvc
 
             builder.Services.AddDateOnlyTimeOnlyStringConverters();
 
-            builder.Services.AddControllersWithViews();
+            builder.Services.AddControllersWithViews(options =>
+            {
+                options.Filters.Add<LogCsrfFailureFilter>();
+            });
 
             AddGoogleOAuth(builder.Configuration, builder.Services);
 
@@ -45,6 +48,8 @@ namespace Budgetty.Mvc
                 containerBuilder.RegisterModule<PersistenceModule>();
                 containerBuilder.RegisterModule<MappersModule>();
             });
+
+            builder.Services.AddTransient<ILogger, MyLogger>();
 
             var app = builder.Build();
 
@@ -110,6 +115,23 @@ namespace Budgetty.Mvc
         private static T GetConfig<T>(IConfiguration configuration, string key)
         {
             return configuration.GetSection(key).Get<T>();
+        }
+    }
+
+    public class MyLogger : ILogger
+    {
+        public IDisposable BeginScope<TState>(TState state)
+        {
+            return null!;
+        }
+
+        public bool IsEnabled(LogLevel logLevel)
+        {
+            return true;
+        }
+
+        public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
+        {
         }
     }
 }

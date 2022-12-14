@@ -102,6 +102,30 @@ namespace Budgetty.Persistance.Repositories
             _budgettyDbContext.SaveChanges();
         }
 
+        public List<BankAccount> GetBankAccountsForUser(string userId)
+        {
+            return _budgettyDbContext
+                .BankAccounts
+                .Where(x => x.UserId == userId)
+                .ToList();
+        }
+
+        public BankAccount? GetBankAccountForUser(string userId, int bankAccountId)
+        {
+            return _budgettyDbContext.BankAccounts.FirstOrDefault(x => x.UserId == userId && x.Id == bankAccountId);
+        }
+
+        public void CreateBudgetaryPoolAccount(string userId, string name, PoolType poolType, BankAccount? bankAccount)
+        {
+            _budgettyDbContext.BudgetaryPools.Add(new BudgetaryPool
+            {
+                Name = name,
+                Type = poolType,
+                BankAccount = bankAccount,
+                UserId = userId,
+            });
+        }
+
         public void DeletePool(string userId, int poolId)
         {
             var pool = _budgettyDbContext.BudgetaryPools.FirstOrDefault(x => x.Id == poolId);
