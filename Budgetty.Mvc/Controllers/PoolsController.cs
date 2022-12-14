@@ -23,11 +23,12 @@ namespace Budgetty.Mvc.Controllers
             var model = new PoolsViewModel
             {
                 Pools = _budgetaryRepository
-                    .GetBudgetaryPoolsForUser(userId, includeBankAccounts: false, includeBudgetaryEvents: true)
+                    .GetBudgetaryPoolsForUser(userId, includeBankAccounts: true, includeBudgetaryEvents: true)
                     .Select(x => new PoolViewModel
                         {
                             Id = x.Id,
                             Name = x.Name,
+                            BankAccountName = x.BankAccount?.Name ?? "N/A",
                             Deletable = x.BudgetaryEventsAsDestination.Count + x.BudgetaryEventsAsSource.Count == 0,
                         }
                     )
