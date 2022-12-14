@@ -8,6 +8,7 @@ using Budgetty.Services.DependencyInjection;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.ApplicationInsights.AspNetCore.Extensions;
 using System.Diagnostics.CodeAnalysis;
+using Budgetty.Mvc.Filters;
 
 namespace Budgetty.Mvc
 {
@@ -48,9 +49,7 @@ namespace Budgetty.Mvc
                 containerBuilder.RegisterModule<PersistenceModule>();
                 containerBuilder.RegisterModule<MappersModule>();
             });
-
-            builder.Services.AddTransient<ILogger, MyLogger>();
-
+            
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -115,23 +114,6 @@ namespace Budgetty.Mvc
         private static T GetConfig<T>(IConfiguration configuration, string key)
         {
             return configuration.GetSection(key).Get<T>();
-        }
-    }
-
-    public class MyLogger : ILogger
-    {
-        public IDisposable BeginScope<TState>(TState state)
-        {
-            return null!;
-        }
-
-        public bool IsEnabled(LogLevel logLevel)
-        {
-            return true;
-        }
-
-        public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
-        {
         }
     }
 }

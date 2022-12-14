@@ -1,11 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 
-namespace Budgetty.Mvc
+namespace Budgetty.Mvc.Filters
 {
     public class LogCsrfFailureFilter : IAsyncAlwaysRunResultFilter
     {
-        public Task OnResultExecutionAsync(ResultExecutingContext context, ResultExecutionDelegate next)
+        public Task OnResultExecutionAsync(ResultExecutingContext context, ResultExecutionDelegate? next)
         {
             if (context.Result is AntiforgeryValidationFailedResult reult)
             {
@@ -14,7 +14,7 @@ namespace Budgetty.Mvc
                 logger?.Log(LogLevel.Warning, "Missing or invalid CSRF token");
             }
 
-            return next();
+            return next?.Invoke() ?? Task.CompletedTask;
         }
     }
 }
