@@ -3,12 +3,12 @@
     public class SummaryViewModel
     {
         public DateOnly CurrentDate { get; set; }
-        public List<BankAccountViewModel> BankAccounts { get; set; } = new();
+        public List<BankAccountSummaryViewModel> BankAccounts { get; set; } = new();
         public List<(string PoolName, decimal Balance)> DebtPoolBalances { get; set; } = new();
         public decimal UnallocatedIncome { get; set; }
     }
 
-    public class BankAccountViewModel
+    public class BankAccountSummaryViewModel
     {
         public int Id { get; set; }
         public string AccountName { get; set; } = "";

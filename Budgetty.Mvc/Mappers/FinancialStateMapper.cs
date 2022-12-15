@@ -22,7 +22,7 @@ namespace Budgetty.Mvc.Mappers
                 CurrentDate = DateOnly.FromDateTime(_dateTimeProvider.GetUtcNow()),
                 UnallocatedIncome = (decimal)financialState.UnallocatedIncomeInPennies / 100,
                 BankAccounts = financialState.GetBankAccountBalances()
-                    .Select(x => new BankAccountViewModel
+                    .Select(x => new BankAccountSummaryViewModel
                     {
                         AccountBalance = (decimal)x.BalanceInPennies / 100,
                         AccountName = x.BankAccount.Name,
