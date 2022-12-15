@@ -23,5 +23,6 @@ namespace Budgetty.Mvc.Models.Pools
 
         public bool Deletable { get; set; }
         public string BankAccountName { get; set; } = string.Empty;
+        public string Type { get; set; } = string.Empty;
     }
 }
