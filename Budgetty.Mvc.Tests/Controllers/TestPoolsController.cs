@@ -183,7 +183,9 @@ namespace Budgetty.Mvc.Tests.Controllers
                     .With(x => x.BudgetaryEventsAsDestination, new List<BudgetaryEvent>())
                     .With(x => x.BudgetaryEventsAsSource, new List<BudgetaryEvent>())
                     .Create(),
-            };
+            }
+                .OrderBy(x => x.BankAccount?.Name ?? "N/A")
+                .ToList();
 
             var bankAccounts = new List<BankAccount>
             {
