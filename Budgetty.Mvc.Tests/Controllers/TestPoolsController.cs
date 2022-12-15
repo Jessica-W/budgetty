@@ -168,7 +168,7 @@ namespace Budgetty.Mvc.Tests.Controllers
 
         [Test]
         public void
-            GivenCurrentUserHasAnIncomePool_WhenIndexIsCalled_ThenViewResultIsReturnedWithNameAndBankAccountNameAndAvailableBankAccounts()
+            GivenCurrentUserHasAnIncomePool_WhenIndexIsCalled_ThenViewResultIsReturnedWithCorrectValues()
         {
             // Given
             var expectedPools = new List<BudgetaryPool>
@@ -178,7 +178,14 @@ namespace Budgetty.Mvc.Tests.Controllers
                     .With(x => x.BudgetaryEventsAsDestination, new List<BudgetaryEvent>())
                     .With(x => x.BudgetaryEventsAsSource, new List<BudgetaryEvent>())
                     .Create(),
-            };
+                BuildObject<BudgetaryPool>()
+                    .With(x => x.Type, PoolType.Income)
+                    .With(x => x.BudgetaryEventsAsDestination, new List<BudgetaryEvent>())
+                    .With(x => x.BudgetaryEventsAsSource, new List<BudgetaryEvent>())
+                    .Create(),
+            }
+                .OrderBy(x => x.BankAccount?.Name ?? "N/A")
+                .ToList();
 
             var bankAccounts = new List<BankAccount>
             {
@@ -210,13 +217,21 @@ namespace Budgetty.Mvc.Tests.Controllers
             Assert.That(result, Is.Not.Null);
             var viewModel = result!.Model as PoolsViewModel;
             Assert.That(viewModel, Is.Not.Null);
-            Assert.That(viewModel!.Pools, Has.Count.EqualTo(1));
+            Assert.That(viewModel!.Pools, Has.Count.EqualTo(2));
             Assert.Multiple(() =>
             {
                 Assert.That(viewModel.Pools[0].Id, Is.EqualTo(expectedPools[0].Id));
                 Assert.That(viewModel.Pools[0].Name, Is.EqualTo(expectedPools[0].Name));
                 Assert.That(viewModel.Pools[0].BankAccountName, Is.EqualTo(expectedPools[0].BankAccount!.Name));
+                Assert.That(viewModel.Pools[0].Type, Is.EqualTo(expectedPools[0].Type.ToString()));
                 Assert.That(viewModel.Pools[0].Deletable, Is.True);
+
+                Assert.That(viewModel.Pools[1].Id, Is.EqualTo(expectedPools[1].Id));
+                Assert.That(viewModel.Pools[1].Name, Is.EqualTo(expectedPools[1].Name));
+                Assert.That(viewModel.Pools[1].BankAccountName, Is.EqualTo(expectedPools[1].BankAccount!.Name));
+                Assert.That(viewModel.Pools[1].Type, Is.EqualTo(expectedPools[1].Type.ToString()));
+                Assert.That(viewModel.Pools[1].Deletable, Is.True);
+
                 Assert.That(viewModel.AvailableBankAccounts, Has.Count.EqualTo(2));
                 Assert.That(viewModel.AvailableBankAccounts[0].Id, Is.EqualTo(bankAccounts[0].Id));
                 Assert.That(viewModel.AvailableBankAccounts[0].Name, Is.EqualTo(bankAccounts[0].Name));

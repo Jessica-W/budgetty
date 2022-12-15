@@ -8,6 +8,7 @@
         <tr>
             <th>Name</th>
             <th>Connected Bank Account</th>
+            <th>Type</th>
             <th class="fit">Actions</th>
         </tr>
     </thead>
@@ -17,6 +18,7 @@
             <tr>
                 <td>@pool.Name</td>
                 <td>@pool.BankAccountName</td>
+                <td>@pool.Type</td>
                 <td class="text-center">
                     @{
                         <form method="post" asp-controller="Pools" asp-action="Delete">

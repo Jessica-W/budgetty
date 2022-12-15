@@ -30,6 +30,7 @@ namespace Budgetty.Mvc.Controllers
                             Id = x.Id,
                             Name = x.Name,
                             BankAccountName = x.BankAccount?.Name ?? "N/A",
+                            Type = x.Type.ToString(),
                             Deletable = x.BudgetaryEventsAsDestination.Count + x.BudgetaryEventsAsSource.Count == 0,
                         }
                     )

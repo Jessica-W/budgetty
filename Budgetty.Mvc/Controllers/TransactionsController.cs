@@ -21,7 +21,6 @@ namespace Budgetty.Mvc.Controllers
         }
 
         [HttpGet, HttpPost]
-        [ValidateAntiForgeryToken]
         public IActionResult Index(DateOnly? transactionsStartDate = null, DateOnly? transactionsEndDate = null)
         {
             if (transactionsStartDate.HasValue &&
