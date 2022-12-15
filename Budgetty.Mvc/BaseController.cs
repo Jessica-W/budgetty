@@ -3,11 +3,11 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Budgetty.Mvc
 {
-    public class BaseController : Controller
+    public abstract class BaseController : Controller
     {
         private readonly UserManager<IdentityUser> _userManager;
 
-        public BaseController(UserManager<IdentityUser> userManager)
+        protected BaseController(UserManager<IdentityUser> userManager)
         {
             _userManager = userManager;
         }

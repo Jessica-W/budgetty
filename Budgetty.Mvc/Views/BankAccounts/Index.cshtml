@@ -1,0 +1,19 @@
+﻿@model Budgetty.Mvc.Models.BankAccounts.BankAccountsViewModel
+
+<h3>Bank Accounts</h3>
+
+<table class="table table-striped align-middle" aria-label="Table of bank accounts">
+    <thead>
+        <tr>
+            <th>Name</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var pool in Model.BankAccounts)
+        {
+            <tr>
+                <td>@pool.Name</td>
+            </tr>
+        }
+    </tbody>
+</table>
