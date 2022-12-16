@@ -13,24 +13,30 @@
         </tr>
     </thead>
     <tbody>
-        @foreach (var pool in Model.Pools)
-        {
-            <tr>
-                <td>@pool.Name</td>
-                <td>@pool.BankAccountName</td>
-                <td>@pool.Type</td>
-                <td class="text-center">
-                    @{
-                        <form method="post" asp-controller="Pools" asp-action="Delete">
-                            <input type="hidden" name="poolId" value="@pool.Id" />
-                            <button type="submit" class="btn btn-sm" disabled="@(!pool.Deletable)">
-                                <span class="fas fa-remove fa-2x @(pool.Deletable ? "text-danger" : "")"></span>
-                            </button>
-                        </form>
-                    }
-                </td>
-            </tr>
-        }
+    @if (!Model.Pools.Any())
+    {
+        <tr>
+            <td class="text-center" colspan="4">There are no pools to display.</td>
+        </tr>
+    }
+    @foreach (var pool in Model.Pools)
+    {
+        <tr>
+            <td>@pool.Name</td>
+            <td>@pool.BankAccountName</td>
+            <td>@pool.Type</td>
+            <td class="text-center">
+                @{
+                    <form method="post" asp-controller="Pools" asp-action="Delete">
+                        <input type="hidden" name="poolId" value="@pool.Id"/>
+                        <button type="submit" class="btn btn-sm" disabled="@(!pool.Deletable)">
+                            <span class="fas fa-remove fa-2x @(pool.Deletable ? "text-danger" : "")"></span>
+                        </button>
+                    </form>
+                }
+            </td>
+        </tr>
+    }
     </tbody>
 </table>
 

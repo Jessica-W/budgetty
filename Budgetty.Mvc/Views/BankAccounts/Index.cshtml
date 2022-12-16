@@ -9,6 +9,13 @@
         </tr>
     </thead>
     <tbody>
+        @if (!Model.BankAccounts.Any())
+        {
+            <tr>
+                <td class="text-center" colspan="4">There are no bank accounts to display.</td>
+            </tr>
+        }
+
         @foreach (var pool in Model.BankAccounts)
         {
             <tr>
