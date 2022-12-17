@@ -207,7 +207,7 @@ namespace Budgetty.Mvc.Tests.Controllers
                 .Verifiable();
 
             GetMock<IBudgetaryRepository>()
-                .Setup(x => x.GetBankAccountsForUser(UserId))
+                .Setup(x => x.GetBankAccountsForUser(UserId, false))
                 .Returns(bankAccounts);
 
             // When
