@@ -148,6 +148,15 @@ namespace Budgetty.Persistance.Repositories
             }
         }
 
+        public void CreateBankAccount(string userId, string name)
+        {
+            _budgettyDbContext.Add(new BankAccount
+            {
+                UserId = userId,
+                Name = name,
+            });
+        }
+
         public void DeletePool(string userId, int poolId)
         {
             var pool = _budgettyDbContext.BudgetaryPools.FirstOrDefault(x => x.Id == poolId);

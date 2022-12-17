@@ -44,5 +44,20 @@ namespace Budgetty.Mvc.Controllers
 
             return RedirectToAction(nameof(Index));
         }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult CreateBankAccount(string name)
+        {
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                throw new ArgumentException("Name must be provided", nameof(name));
+            }
+
+            _budgetaryRepository.CreateBankAccount(GetUserId(), name);
+            _budgetaryRepository.SaveChanges();
+
+            return RedirectToAction(nameof(Index));
+        }
     }
 }

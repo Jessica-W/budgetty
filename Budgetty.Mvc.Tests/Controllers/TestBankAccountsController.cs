@@ -166,7 +166,7 @@ namespace Budgetty.Mvc.Tests.Controllers
                     {
                         if (!deleteBankAccountCalled)
                         {
-                            Assert.Fail("SaveChanges called on repository before bank account was deleted");
+                            Assert.Fail($"SaveChanges called on repository before {nameof(IBudgetaryRepository.DeleteBankAccount)}");
                         }
                     }
                 )
@@ -183,5 +183,63 @@ namespace Budgetty.Mvc.Tests.Controllers
         }
 
         #endregion
+
+        #region CreateBankAccount
+
+        [Test]
+        public void GivenValidBankAccountDetails_WhenCreateBankAccountIsCalled_ThenBankAccountIsCreatedAndRedirectToIndexIsReturned()
+        {
+            // Given
+            const string name = "Savings Account";
+
+            var createBankAccountCalled = false;
+
+            GetMock<IBudgetaryRepository>()
+                .Setup(x => x.CreateBankAccount(UserId, name))
+                .Callback(() => createBankAccountCalled = true)
+                .Verifiable();
+
+            GetMock<IBudgetaryRepository>()
+                .Setup(x => x.SaveChanges())
+                .Callback(() =>
+                {
+                    if (!createBankAccountCalled)
+                    {
+                        Assert.Fail($"SaveChanges called before {nameof(IBudgetaryRepository.CreateBankAccount)}");
+                    }
+                })
+                .Verifiable();
+
+            // When
+            var result = ClassUnderTest.CreateBankAccount(name) as RedirectToActionResult;
+
+            // Then
+            AssertRedirectsToIndex(result);
+
+            GetMock<IBudgetaryRepository>().Verify();
+        }
+
+        [TestCase("")]
+        [TestCase("  ")]
+        [TestCase("     ")]
+        [TestCase(null)]
+        public void GivenNameIsNullOrWhitespace_WhenCreateBankAccountIsCalled_ThenBankAccountIsCreatedAndRedirectToIndexIsReturned(string name)
+        {
+            // Given / When / Then
+            var ex = Assert.Throws<ArgumentException>(() => { ClassUnderTest.CreateBankAccount(name); });
+            Assert.That(ex!.Message, Is.EqualTo("Name must be provided (Parameter 'name')"));
+        }
+
+        #endregion
+
+        private static void AssertRedirectsToIndex(RedirectToActionResult? result)
+        {
+            Assert.That(result, Is.Not.Null);
+            Assert.Multiple(() =>
+            {
+                Assert.That(result!.ControllerName, Is.Null);
+                Assert.That(result.ActionName, Is.EqualTo(nameof(PoolsController.Index)));
+            });
+        }
     }
 }

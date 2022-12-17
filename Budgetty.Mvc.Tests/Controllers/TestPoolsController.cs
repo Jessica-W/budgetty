@@ -296,7 +296,7 @@ namespace Budgetty.Mvc.Tests.Controllers
                 Name = "account",
             };
 
-            var createBudgetaryPoolAccount = false;
+            var createBudgetaryPoolCalled = false;
 
             GetMock<IBudgetaryRepository>()
                 .Setup(x => x.GetBankAccountForUser(UserId, bankAccountId))
@@ -305,14 +305,14 @@ namespace Budgetty.Mvc.Tests.Controllers
 
             GetMock<IBudgetaryRepository>()
                 .Setup(x => x.CreateBudgetaryPoolAccount(UserId, poolName, poolType, bankAccount))
-                .Callback(() => createBudgetaryPoolAccount = true)
+                .Callback(() => createBudgetaryPoolCalled = true)
                 .Verifiable();
 
             GetMock<IBudgetaryRepository>()
                 .Setup(x => x.SaveChanges())
                 .Callback(() =>
                 {
-                    if (!createBudgetaryPoolAccount)
+                    if (!createBudgetaryPoolCalled)
                     {
                         Assert.Fail($"SaveChanges called before {nameof(IBudgetaryRepository.CreateBudgetaryPoolAccount)}");
                     }
@@ -336,18 +336,18 @@ namespace Budgetty.Mvc.Tests.Controllers
             const PoolType poolType = PoolType.Debt;
             const int bankAccountId = 1;
             
-            var createBudgetaryPoolAccount = false;
+            var createBudgetaryPoolCalled = false;
             
             GetMock<IBudgetaryRepository>()
                 .Setup(x => x.CreateBudgetaryPoolAccount(UserId, poolName, poolType, null))
-                .Callback(() => createBudgetaryPoolAccount = true)
+                .Callback(() => createBudgetaryPoolCalled = true)
                 .Verifiable();
 
             GetMock<IBudgetaryRepository>()
                 .Setup(x => x.SaveChanges())
                 .Callback(() =>
                 {
-                    if (!createBudgetaryPoolAccount)
+                    if (!createBudgetaryPoolCalled)
                     {
                         Assert.Fail($"SaveChanges called before {nameof(IBudgetaryRepository.CreateBudgetaryPoolAccount)}");
                     }
@@ -386,7 +386,7 @@ namespace Budgetty.Mvc.Tests.Controllers
                 .Returns(bankAccount)
                 .Verifiable();
 
-            // When
+            // When / Then
             var ex = Assert.Throws<ArgumentException>(() => ClassUnderTest.CreatePool(poolName, poolType, bankAccountId));
             Assert.That(ex!.Message, Is.EqualTo("Name must be provided (Parameter 'name')"));
         }
@@ -411,7 +411,7 @@ namespace Budgetty.Mvc.Tests.Controllers
                 .Returns(bankAccount)
                 .Verifiable();
             
-            // When
+            // When / Then
             var ex = Assert.Throws<ArgumentException>(() => ClassUnderTest.CreatePool(poolName, poolType, bankAccountId));
             Assert.That(ex!.Message, Is.EqualTo("Invalid pool type (Parameter 'poolType')"));
         }
@@ -429,7 +429,7 @@ namespace Budgetty.Mvc.Tests.Controllers
                 .Returns((BankAccount?)null)
                 .Verifiable();
             
-            // When
+            // When / Then
             var ex = Assert.Throws<ArgumentException>(() => ClassUnderTest.CreatePool(poolName, poolType, bankAccountId));
             Assert.That(ex!.Message, Is.EqualTo("Invalid bank account ID (Parameter 'bankAccountId')"));
         }

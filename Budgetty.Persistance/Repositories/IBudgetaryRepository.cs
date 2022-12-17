@@ -17,4 +17,5 @@ public interface IBudgetaryRepository
     BankAccount? GetBankAccountForUser(string userId, int bankAccountId);
     void CreateBudgetaryPoolAccount(string userId, string name, PoolType poolType, BankAccount? bankAccount);
     void DeleteBankAccount(string userId, int bankAccountId);
+    void CreateBankAccount(string userId, string name);
 }
