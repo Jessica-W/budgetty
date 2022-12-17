@@ -4,34 +4,54 @@
 
 <table class="table table-striped align-middle" aria-label="Table of bank accounts">
     <thead>
-        <tr>
-            <th>Name</th>
-            <th class="fit">Actions</th>
-        </tr>
+    <tr>
+        <th>Name</th>
+        <th class="fit">Actions</th>
+    </tr>
     </thead>
     <tbody>
-        @if (!Model.BankAccounts.Any())
-        {
-            <tr>
-                <td class="text-center" colspan="2">There are no bank accounts to display.</td>
-            </tr>
-        }
+    @if (!Model.BankAccounts.Any())
+    {
+        <tr>
+            <td class="text-center" colspan="2">There are no bank accounts to display.</td>
+        </tr>
+    }
 
-        @foreach (var bankAccount in Model.BankAccounts)
-        {
-            <tr>
-                <td>@bankAccount.Name</td>
-                <td class="text-center">
+    @foreach (var bankAccount in Model.BankAccounts)
+    {
+        <tr>
+            <td>@bankAccount.Name</td>
+            <td class="text-center">
                 @{
                     <form method="post" asp-controller="BankAccounts" asp-action="Delete">
-                            <input type="hidden" name="bankAccountId" value="@bankAccount.Id" />
+                        <input type="hidden" name="bankAccountId" value="@bankAccount.Id" />
                         <button type="submit" class="btn btn-sm" disabled="@(!bankAccount.Deletable)">
                             <span class="fas fa-remove fa-2x @(bankAccount.Deletable ? "text-danger" : "")"></span>
                         </button>
                     </form>
                 }
             </td>
-            </tr>
-        }
+        </tr>
+    }
     </tbody>
 </table>
+
+<form method="post" asp-controller="BankAccounts" asp-action="CreateBankAccount">
+    <div class="row">
+        <div class="col">
+            <input type="text" class="form-control" name="name" oninput="nameChanged(event)" placeholder="New bank account's name" />
+        </div>
+        <div class="col">
+            <button disabled="disabled" id="createBankAccount" class="btn btn-primary">Create New Bank Account</button>
+        </div>
+    </div>
+</form>
+
+<script>
+    function nameChanged(event) {
+        let nameInput = event.target;
+        let name = nameInput.value;
+
+        document.getElementById("createBankAccount").disabled = (name.length == 0);
+    }
+</script>
