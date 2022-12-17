@@ -60,7 +60,7 @@ namespace Budgetty.Mvc.Controllers
                     Description = x.ToString(),
                 })
                 .ToList();
-            
+
             return View(viewModel);
         }
     }
