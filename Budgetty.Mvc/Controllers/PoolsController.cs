@@ -36,7 +36,7 @@ namespace Budgetty.Mvc.Controllers
                     )
                     .OrderBy(x => x.BankAccountName)
                     .ToList(),
-                AvailableBankAccounts = _budgetaryRepository.GetBankAccountsForUser(userId)
+                AvailableBankAccounts = _budgetaryRepository.GetBankAccountsForUser(userId, includeBudgetaryPools: false)
                     .Select(x => new AvailableBankAccountViewModel
                     {
                         Id = x.Id,

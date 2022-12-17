@@ -13,7 +13,8 @@ public interface IBudgetaryRepository
     void AddBudgetaryEvent(BudgetaryEvent budgetaryEvent);
     void DeletePool(string userId, int poolId);
     void SaveChanges();
-    List<BankAccount> GetBankAccountsForUser(string userId);
+    List<BankAccount> GetBankAccountsForUser(string userId, bool includeBudgetaryPools);
     BankAccount? GetBankAccountForUser(string userId, int bankAccountId);
     void CreateBudgetaryPoolAccount(string userId, string name, PoolType poolType, BankAccount? bankAccount);
+    void DeleteBankAccount(string userId, int bankAccountId);
 }
