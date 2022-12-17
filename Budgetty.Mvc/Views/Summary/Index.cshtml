@@ -1,86 +1,83 @@
 ﻿@model Budgetty.Mvc.Models.Summary.SummaryViewModel
-<!DOCTYPE html>
 
-<html lang="en">
-<head>
-    <title>Summary</title>
-</head>
-<body>
-    <div>
-        <h1>Bank Account Summaries as of @Model.CurrentDate.ToLongDateString()</h1>
+@{
+    ViewBag.Title = "Transactions";
+    Layout = "_Layout";
+}
 
-        <ul class="nav nav-tabs" id="myTab" role="tablist">
-            @for (var index = 0; index < Model.BankAccounts.Count; index++)
-            {
-                var bankAccount = Model.BankAccounts[index];
+<div>
+    <h1>Bank Account Summaries as of @Model.CurrentDate.ToLongDateString()</h1>
 
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link @(index == 0 ? "active" : "")" id="@bankAccount.AccountName-tab" data-bs-toggle="tab" data-bs-target="#@bankAccount.AccountName" type="button" role="tab" aria-controls="home" aria-selected="true">@bankAccount.AccountName</button>
-                </li>
-            }
-        </ul>
-        <div class="tab-content" id="myTabContent">
-            @for (var index = 0; index < Model.BankAccounts.Count; index++)
-            {
-                var bankAccount = Model.BankAccounts[index];
-
-                <div class="tab-pane fade @(index == 0 ? "show active" : "")" id="@bankAccount.AccountName" role="tabpanel" aria-labelledby="profile-tab">
-                    <h2>Account balance</h2>
-                    <p>@bankAccount.AccountBalance.ToString("C")</p>
-                    
-                    @if (bankAccount.IncomePoolBalances.Any())
-                    {
-                        <h2>Account Pools</h2>
-
-                        <table class="table">
-                         <thead>
-                         <tr>
-                             <th>Pool</th>
-                             <th>Balance</th>
-                         </tr>
-                         </thead>
-
-                         <tbody>
-                         @foreach (var poolSummary in bankAccount.IncomePoolBalances)
-                         {
-                             <tr>
-                                 <td>@poolSummary.PoolName</td>
-                                 <td>@poolSummary.Balance.ToString("C")</td>
-                             </tr>
-                         }
-                         </tbody>
-                     </table>
-                    }
-                </div>
-            }
-        </div>
-
-        @if (Model.DebtPoolBalances.Any())
+    <ul class="nav nav-tabs" id="myTab" role="tablist">
+        @for (var index = 0; index < Model.BankAccounts.Count; index++)
         {
-            <h1>Debt Pool Balances</h1>
+            var bankAccount = Model.BankAccounts[index];
 
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>Pool</th>
-                        <th>Balance</th>
-                    </tr>
-                </thead>
-
-                <tbody>
-                    @foreach (var poolSummary in Model.DebtPoolBalances)
-                    {
-                        <tr>
-                            <td>@poolSummary.PoolName</td>
-                            <td>@poolSummary.Balance.ToString("C")</td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link @(index == 0 ? "active" : "")" id="@bankAccount.AccountName-tab" data-bs-toggle="tab" data-bs-target="#@bankAccount.AccountName" type="button" role="tab" aria-controls="home" aria-selected="true">@bankAccount.AccountName</button>
+            </li>
         }
+    </ul>
+    <div class="tab-content" id="myTabContent">
+        @for (var index = 0; index < Model.BankAccounts.Count; index++)
+        {
+            var bankAccount = Model.BankAccounts[index];
 
-        <h1>Unallocated Income</h1>
-        <p>There is @Model.UnallocatedIncome.ToString("C") unallocated income.</p>
+            <div class="tab-pane fade @(index == 0 ? "show active" : "")" id="@bankAccount.AccountName" role="tabpanel" aria-labelledby="profile-tab">
+                <h2>Account balance</h2>
+                <p>@bankAccount.AccountBalance.ToString("C")</p>
+
+                @if (bankAccount.IncomePoolBalances.Any())
+                {
+                    <h2>Account Pools</h2>
+
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Pool</th>
+                                <th>Balance</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            @foreach (var poolSummary in bankAccount.IncomePoolBalances)
+                            {
+                                <tr>
+                                    <td>@poolSummary.PoolName</td>
+                                    <td>@poolSummary.Balance.ToString("C")</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+            </div>
+        }
     </div>
-</body>
-</html>
+
+    @if (Model.DebtPoolBalances.Any())
+    {
+        <h1>Debt Pool Balances</h1>
+
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Pool</th>
+                    <th>Balance</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                @foreach (var poolSummary in Model.DebtPoolBalances)
+                {
+                    <tr>
+                        <td>@poolSummary.PoolName</td>
+                        <td>@poolSummary.Balance.ToString("C")</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+
+    <h1>Unallocated Income</h1>
+    <p>There is @Model.UnallocatedIncome.ToString("C") unallocated income.</p>
+</div>
