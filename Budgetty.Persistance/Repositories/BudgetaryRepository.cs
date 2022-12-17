@@ -102,11 +102,18 @@ namespace Budgetty.Persistance.Repositories
             _budgettyDbContext.SaveChanges();
         }
 
-        public List<BankAccount> GetBankAccountsForUser(string userId)
+        public List<BankAccount> GetBankAccountsForUser(string userId, bool includeBudgetaryPools)
         {
-            return _budgettyDbContext
+            var query = _budgettyDbContext
                 .BankAccounts
-                .Where(x => x.UserId == userId)
+                .Where(x => x.UserId == userId);
+
+            if (includeBudgetaryPools)
+            {
+                query = query.Include(x => x.BudgetaryPools);
+            }
+
+            return query
                 .ToList();
         }
 
@@ -124,6 +131,21 @@ namespace Budgetty.Persistance.Repositories
                 BankAccount = bankAccount,
                 UserId = userId,
             });
+        }
+
+        public void DeleteBankAccount(string userId, int bankAccountId)
+        {
+            var bankAccount = _budgettyDbContext.BankAccounts.FirstOrDefault(x => x.Id == bankAccountId);
+
+            if (bankAccount != null)
+            {
+                if (bankAccount.UserId != userId)
+                {
+                    throw new SecurityViolationException("Attempt to delete another user's bank account");
+                }
+
+                _budgettyDbContext.BankAccounts.Remove(bankAccount);
+            }
         }
 
         public void DeletePool(string userId, int poolId)

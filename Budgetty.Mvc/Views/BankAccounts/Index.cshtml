@@ -6,20 +6,31 @@
     <thead>
         <tr>
             <th>Name</th>
+            <th class="fit">Actions</th>
         </tr>
     </thead>
     <tbody>
         @if (!Model.BankAccounts.Any())
         {
             <tr>
-                <td class="text-center" colspan="4">There are no bank accounts to display.</td>
+                <td class="text-center" colspan="2">There are no bank accounts to display.</td>
             </tr>
         }
 
-        @foreach (var pool in Model.BankAccounts)
+        @foreach (var bankAccount in Model.BankAccounts)
         {
             <tr>
-                <td>@pool.Name</td>
+                <td>@bankAccount.Name</td>
+                <td class="text-center">
+                @{
+                    <form method="post" asp-controller="BankAccounts" asp-action="Delete">
+                            <input type="hidden" name="bankAccountId" value="@bankAccount.Id" />
+                        <button type="submit" class="btn btn-sm" disabled="@(!bankAccount.Deletable)">
+                            <span class="fas fa-remove fa-2x @(bankAccount.Deletable ? "text-danger" : "")"></span>
+                        </button>
+                    </form>
+                }
+            </td>
             </tr>
         }
     </tbody>

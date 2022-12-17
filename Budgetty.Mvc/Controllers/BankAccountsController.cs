@@ -11,7 +11,8 @@ namespace Budgetty.Mvc.Controllers
     {
         private readonly IBudgetaryRepository _budgetaryRepository;
 
-        public BankAccountsController(UserManager<IdentityUser> userManager, IBudgetaryRepository budgetaryRepository) : base(userManager)
+        public BankAccountsController(UserManager<IdentityUser> userManager, IBudgetaryRepository budgetaryRepository) :
+            base(userManager)
         {
             _budgetaryRepository = budgetaryRepository;
         }
@@ -20,17 +21,28 @@ namespace Budgetty.Mvc.Controllers
         {
             var userId = GetUserId();
 
-            var bankAccounts = _budgetaryRepository.GetBankAccountsForUser(userId);
+            var bankAccounts = _budgetaryRepository.GetBankAccountsForUser(userId, includeBudgetaryPools: true);
             var viewModel = new BankAccountsViewModel
             {
                 BankAccounts = bankAccounts.Select(x => new BankAccountViewModel
                 {
                     Id = x.Id,
                     Name = x.Name,
+                    Deletable = !x.BudgetaryPools.Any(),
                 }).ToList(),
             };
 
             return View(viewModel);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Delete(int bankAccountId)
+        {
+            _budgetaryRepository.DeleteBankAccount(GetUserId(), bankAccountId);
+            _budgetaryRepository.SaveChanges();
+
+            return RedirectToAction(nameof(Index));
         }
     }
 }

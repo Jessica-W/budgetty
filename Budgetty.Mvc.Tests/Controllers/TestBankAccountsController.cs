@@ -45,7 +45,7 @@ namespace Budgetty.Mvc.Tests.Controllers
             };
 
             GetMock<IBudgetaryRepository>()
-                .Setup(x => x.GetBankAccountsForUser(UserId))
+                .Setup(x => x.GetBankAccountsForUser(UserId, true))
                 .Returns(bankAccounts)
                 .Verifiable();
 
@@ -61,9 +61,123 @@ namespace Budgetty.Mvc.Tests.Controllers
                 Assert.That(viewModel!.BankAccounts, Has.Count.EqualTo(2));
                 Assert.That(viewModel.BankAccounts[0].Id, Is.EqualTo(bankAccounts[0].Id));
                 Assert.That(viewModel.BankAccounts[0].Name, Is.EqualTo(bankAccounts[0].Name));
+                Assert.That(viewModel.BankAccounts[0].Deletable, Is.True);
                 Assert.That(viewModel.BankAccounts[1].Id, Is.EqualTo(bankAccounts[1].Id));
                 Assert.That(viewModel.BankAccounts[1].Name, Is.EqualTo(bankAccounts[1].Name));
+                Assert.That(viewModel.BankAccounts[1].Deletable, Is.True);
             });
+
+            GetMock<IBudgetaryRepository>().Verify();
+        }
+
+        [Test]
+        public void GivenBankAccountHasAssociatedPools_WhenIndexIsCalled_ThenDeletableIsFalse()
+        {
+            // Given
+            var pool = new BudgetaryPool();
+
+            var bankAccounts = new List<BankAccount>
+            {
+                new ()
+                {
+                    Id = 1,
+                    UserId = UserId,
+                    Name = "Test Account A",
+                    BudgetaryPools = new List<BudgetaryPool> { pool },
+                },
+            };
+
+            GetMock<IBudgetaryRepository>()
+                .Setup(x => x.GetBankAccountsForUser(UserId, true))
+                .Returns(bankAccounts)
+                .Verifiable();
+
+            // When
+            var result = ClassUnderTest.Index() as ViewResult;
+
+            // Then
+            Assert.That(result, Is.Not.Null);
+            var viewModel = result!.Model as BankAccountsViewModel;
+            Assert.That(viewModel, Is.Not.Null);
+            Assert.Multiple(() =>
+            {
+                Assert.That(viewModel!.BankAccounts, Has.Count.EqualTo(1));
+                Assert.That(viewModel.BankAccounts[0].Deletable, Is.False);
+            });
+
+            GetMock<IBudgetaryRepository>().Verify();
+        }
+
+        [Test]
+        public void GivenBankAccountHasNoAssociatedPools_WhenIndexIsCalled_ThenDeletableIsTrue()
+        {
+            // Given
+            var bankAccounts = new List<BankAccount>
+            {
+                new ()
+                {
+                    Id = 1,
+                    UserId = UserId,
+                    Name = "Test Account A",
+                    BudgetaryPools = new List<BudgetaryPool>(),
+                },
+            };
+
+            GetMock<IBudgetaryRepository>()
+                .Setup(x => x.GetBankAccountsForUser(UserId, true))
+                .Returns(bankAccounts)
+                .Verifiable();
+
+            // When
+            var result = ClassUnderTest.Index() as ViewResult;
+
+            // Then
+            Assert.That(result, Is.Not.Null);
+            var viewModel = result!.Model as BankAccountsViewModel;
+            Assert.That(viewModel, Is.Not.Null);
+            Assert.Multiple(() =>
+            {
+                Assert.That(viewModel!.BankAccounts, Has.Count.EqualTo(1));
+                Assert.That(viewModel.BankAccounts[0].Deletable, Is.True);
+            });
+
+            GetMock<IBudgetaryRepository>().Verify();
+        }
+
+        #endregion
+
+        #region Delete
+
+        [Test]
+        public void GivenBankAccountId_WhenDeleteIsCalled_ThenBudgetaryRepositoryIsUsedToDeleteTheBankAccountAndRedirectToIndexIsReturned()
+        {
+            // Given
+            const int bankAccountId = 1;
+            var deleteBankAccountCalled = false;
+
+            GetMock<IBudgetaryRepository>()
+                .Setup(x => x.DeleteBankAccount(UserId, bankAccountId))
+                .Callback(() => deleteBankAccountCalled = true)
+                .Verifiable();
+
+            GetMock<IBudgetaryRepository>()
+                .Setup(x => x.SaveChanges())
+                .Callback(() =>
+                    {
+                        if (!deleteBankAccountCalled)
+                        {
+                            Assert.Fail("SaveChanges called on repository before bank account was deleted");
+                        }
+                    }
+                )
+                .Verifiable();
+
+            // When
+            var result = ClassUnderTest.Delete(bankAccountId) as RedirectToActionResult;
+
+            // Then
+            Assert.That(result, Is.Not.Null);
+            Assume.That(result!.ActionName, Is.EqualTo(nameof(BankAccountsController.Index)));
 
             GetMock<IBudgetaryRepository>().Verify();
         }
