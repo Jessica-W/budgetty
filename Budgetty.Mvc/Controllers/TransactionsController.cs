@@ -13,11 +13,13 @@ namespace Budgetty.Mvc.Controllers
     {
         private readonly IBudgetaryRepository _budgetaryRepository;
         private readonly IDateTimeProvider _dateTimeProvider;
+        private readonly IBudgetaryEventDescriber _budgetaryEventDescriber;
 
-        public TransactionsController(UserManager<IdentityUser> userManager, IBudgetaryRepository budgetaryRepository, IDateTimeProvider dateTimeProvider) : base(userManager)
+        public TransactionsController(UserManager<IdentityUser> userManager, IBudgetaryRepository budgetaryRepository, IDateTimeProvider dateTimeProvider, IBudgetaryEventDescriber budgetaryEventDescriber) : base(userManager)
         {
             _budgetaryRepository = budgetaryRepository;
             _dateTimeProvider = dateTimeProvider;
+            _budgetaryEventDescriber = budgetaryEventDescriber;
         }
 
         [HttpGet, HttpPost]
@@ -37,6 +39,9 @@ namespace Budgetty.Mvc.Controllers
             var dateOfEarliestBudgetaryEvent = _budgetaryRepository.GetDateOfEarliestBudgetaryEventForUser(userId);
             var dateOfLatestBudgetaryEvent = _budgetaryRepository.GetDateOfLatestBudgetaryEventForUser(userId);
 
+            /* If there are no events then just use the start of the month as the start date.
+             * If there are events then the start date is the current month start date if there are any events for the current month otherwise the start date is the beginning of the month of the earliest event
+             */
             transactionsStartDate ??= dateOfEarliestBudgetaryEvent.HasValue
                 ? DateHelper.Max(dateOfEarliestBudgetaryEvent.Value.MonthStart(), currentMonthStart)
                 : currentMonthStart;
@@ -57,7 +62,8 @@ namespace Budgetty.Mvc.Controllers
                 .Select(x => new TransactionViewModel
                 {
                     Date = x.Date,
-                    Description = x.ToString(),
+                    Description = _budgetaryEventDescriber.DescribeEvent(x),
+                    Notes = x.Notes,
                 })
                 .ToList();
 
