@@ -11,9 +11,16 @@ namespace Budgetty.Domain.BudgetaryEvents
         public int SequenceNumber { get; set; }
         public string? UserId { get; set; }
         public int AmountInPennies { get; set; }
-        public string Description { get; set; } = string.Empty;
+        public string Notes { get; set; } = string.Empty;
 
+        /// <summary>
+        /// Used as debt pool for income events, source pool for expenditure events and source pool for pool transfer events
+        /// </summary>
         public BudgetaryPool? SourcePool { get; set; }
+
+        /// <summary>
+        /// Used for income allocation event and as destination in pool transfer event
+        /// </summary>
         public BudgetaryPool? DestinationPool { get; set; }
 
         public enum BudgetaryEventType
